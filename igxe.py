@@ -71,6 +71,7 @@ def get_data(ip_lst):
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557034298679"} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     save_data2db(appid,r.text)
+    print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
     time.sleep(0.5)
 
   for i in range(circles[3]):
@@ -79,6 +80,7 @@ def get_data(ip_lst):
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557026884738"} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     save_data2db(appid,r.text)
+    print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
     time.sleep(0.5)
 
 def save_data2db(appid,html):
@@ -111,7 +113,6 @@ def save_data2db(appid,html):
   finally:
     cursor.close()
     conn.close()
-  print( ">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
 
 if __name__ == '__main__':
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
