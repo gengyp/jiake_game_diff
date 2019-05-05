@@ -12,11 +12,19 @@ sys.path.insert(0,'../Proxy')
 import config as cfg
 
 '''
+<<<<<<< HEAD
 CREATE TABLE "jiake"."game_igxe_goods" (
   "index" SERIAL PRIMARY KEY,
   "appid" int8,
   "good_name" text COLLATE "default",
   "amount" text COLLATE "default",
+=======
+CREATE TABLE "jiake"."game_v5fox_goods" (
+  "index" SERIAL PRIMARY KEY,
+  "appid" int8,
+  "good_name" text COLLATE "default",
+  "amount" float8,
+>>>>>>> develop
   "good_status" text COLLATE "default",
   "good_num" int8,
   "create_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP
@@ -40,6 +48,7 @@ def get_proxy():
   return ip_list
 
 def get_data(ip_lst):
+<<<<<<< HEAD
   circles = [421,25,21,1] # 依次循环次数
   print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
   headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
@@ -88,21 +97,57 @@ def save_data2db(html):
   amounts = tree.xpath('//div[@class="dataList"]/a/div[3]/div/span/text()')
   amount_subs = tree.xpath('//div[@class="dataList"]/a/div[3]/div/sub/text()')
   good_statuses = tree.xpath('//div[@class="dataList"]/a/div[3]/div[2]/text()')
+=======
+  circles = [60] # 依次循环次数
+  # print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
+  headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
+  # dota2
+  url = "https://www.v5fox.com/dota2"
+  appid = 570
+  for i in range(circles[0]):
+    proxy = {'http': 'http://' + random.choice(ip_lst)}
+    querystring = {"keyword":"","min_price":"1.00","max_price":"1000.00","sort_key":"1","sort_type":"2",
+        "only_flag":"","pageNum":"{}".format(i+1),"pageSize":"25"} # 出售&求购
+    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+    save_data2db(appid,r.text)
+    time.sleep(0.5)
+
+def save_data2db(appid,html):
+  tree = etree.HTML(html)
+
+  goods_names = tree.xpath('/html/body/div[6]/div[2]/div[2]/a/@title')
+  amounts= tree.xpath('/html/body/div[6]/div[2]/div[2]/a/div[1]/div[2]/p/span/text()')
+  good_statuses = tree.xpath('/html/body/div[6]/div[2]/div[2]/a/div[2]/div[2]/text()')
+>>>>>>> develop
 
   lst = []
   for i in range(len(goods_names)):
     goods_name = goods_names[i].replace("'",'')
+<<<<<<< HEAD
     good_status = good_statuses[i].split('：')[0]
     good_num = eval(good_statuses[i].split('：')[1])
     lst.append([570,goods_name,amounts[i]+amount_subs[i],good_status,good_num])
 
   # store valid proxies into db.
   print ("\n>>>>>>>>>>>>>>>>>>>> Insert to database Start  <<<<<<<<<<<<<<<<<<<<<<")
+=======
+    amount = eval(amounts[i])
+    good_status = good_statuses[i].split('件 ')[1].replace("需求","求购")
+    good_num = eval(good_statuses[i].split('件')[0])
+    lst.append([appid,goods_name,amount,good_status,good_num])
+
+  # store valid proxies into db.
+  # print ("\n>>>>>>>>>>>>>>>>>>>> Insert to database Start  <<<<<<<<<<<<<<<<<<<<<<")
+>>>>>>> develop
   try:
     conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
     cursor = conn.cursor()
     for i,t in enumerate(lst):
+<<<<<<< HEAD
       sql = '''INSERT INTO jiake.game_igxe_goods(appid,good_name,amount,good_status,good_num) VALUES({},'{}','{}','{}',{})'''.format(*t)
+=======
+      sql = '''INSERT INTO jiake.game_v5fox_goods(appid,good_name,amount,good_status,good_num) VALUES({},'{}',{},'{}',{})'''.format(*t)
+>>>>>>> develop
       cursor.execute(sql)
       conn.commit()
       # print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
@@ -111,12 +156,20 @@ def save_data2db(html):
   finally:
     cursor.close()
     conn.close()
+<<<<<<< HEAD
   print( ">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<")
+=======
+  print( ">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
+>>>>>>> develop
 
 if __name__ == '__main__':
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
   cursor = conn.cursor()
+<<<<<<< HEAD
   sql = "DELETE FROM jiake.game_igxe_goods"
+=======
+  sql = "DELETE FROM jiake.game_v5fox_goods"
+>>>>>>> develop
   cursor.execute(sql) # 删除当前数据
   conn.commit()
   cursor.close()

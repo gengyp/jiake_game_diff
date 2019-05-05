@@ -97,7 +97,7 @@ def save_data2db(appid,html):
     lst.append([appid,goods_name,amounts[i]+amount_subs[i],good_status,good_num])
 
   # store valid proxies into db.
-  print ("\n>>>>>>>>>>>>>>>>>>>> Insert to database Start  <<<<<<<<<<<<<<<<<<<<<<")
+  # print ("\n>>>>>>>>>>>>>>>>>>>> Insert to database Start  <<<<<<<<<<<<<<<<<<<<<<")
   try:
     conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
     cursor = conn.cursor()
@@ -111,7 +111,7 @@ def save_data2db(appid,html):
   finally:
     cursor.close()
     conn.close()
-  print( ">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<")
+  print( ">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
 
 if __name__ == '__main__':
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
