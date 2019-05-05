@@ -52,6 +52,7 @@ def get_data(ip_lst):
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557025475913"} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     save_data2db(appid,r.text)
+    print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
     time.sleep(0.5)
 
   for i in range(circles[1]):
@@ -60,6 +61,7 @@ def get_data(ip_lst):
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557026884738"} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     save_data2db(appid,r.text)
+    print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
     time.sleep(0.5)
 
   # H1Z1

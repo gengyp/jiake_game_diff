@@ -52,7 +52,6 @@ def get_data(ip_lst):
         "only_flag":"","pageNum":"{}".format(i+1),"pageSize":"25"} # 出售&求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     save_data2db(appid,r.text)
-    print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
     time.sleep(0.5)
 
 def save_data2db(appid,html):

@@ -12,45 +12,47 @@ from sqlalchemy import create_engine
 
 def output2dingding():
   sql = '''
-    DROP TABLE jiake.game_total;
-    CREATE TABLE jiake.game_total as
-    SELECT appid,good_name,amount::NUMERIC,good_status,'igxe' platform
-    from jiake.game_igxe_goods
-    union
-    SELECT appid,good_name,amount,good_status,'c5game'
-    from game_c5game_goods
-    union
-    SELECT appid,good_name,amount,good_status,'v5fox'
-    from game_v5fox_goods
-    union
-    SELECT appid,market_name,on_sale_price_min/100.0,'在售','stmbuy'
-    from jiake.game_stmbuy_goods
-    WHERE on_sale_count>0
-    union
-    SELECT appid,market_name,on_seek_price_max/100.0,'求购','stmbuy'
-    from jiake.game_stmbuy_goods
-    WHERE on_seek_count>0
-    union
-    SELECT appid,name,sell_min_price::NUMERIC,'在售','buff'
-    from game_buff_goods a
-    WHERE sell_num>0
-    union
-    SELECT appid,name,a.buy_max_price::NUMERIC,'求购','buff'
-    from game_buff_goods a
-    WHERE buy_num>0;
-    SELECT a.appid,a.good_name,max_buy,min_sell,max_buy-min_sell diff
-    ,b.platform max_platform,c.platform min_platform
-    from
-    (
-        SELECT appid,good_name,max(case when good_status='求购' then amount else 0 end) max_buy
-        ,max(case when good_status='在售' then amount else 0 end) min_sell
-        from jiake.game_total a
-        GROUP BY 1,2
-    )a
-    LEFT JOIN jiake.game_total b on a.appid=b.appid and a.good_name=b.good_name and a.max_buy=b.amount
-    LEFT JOIN jiake.game_total c on a.appid=c.appid and a.good_name=c.good_name and a.min_sell=c.amount
-    WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>1
-    ORDER BY 5 desc
+DROP TABLE jiake.game_total;
+
+CREATE TABLE jiake.game_total as
+SELECT appid,good_name,amount::NUMERIC,good_status,'igxe' platform
+from jiake.game_igxe_goods
+union
+SELECT appid,good_name,amount,good_status,'c5game'
+from jiake.game_c5game_goods
+union
+SELECT appid,good_name,amount,good_status,'v5fox'
+from jiake.game_v5fox_goods
+union
+SELECT appid,market_name,on_sale_price_min/100.0,'在售','stmbuy'
+from jiake.game_stmbuy_goods
+WHERE on_sale_count>0
+union
+SELECT appid,market_name,on_seek_price_max/100.0,'求购','stmbuy'
+from jiake.game_stmbuy_goods
+WHERE on_seek_count>0
+union
+SELECT appid,name,sell_min_price::NUMERIC,'在售','buff'
+from jiake.game_buff_goods a
+WHERE sell_num>0
+union
+SELECT appid,name,a.buy_max_price::NUMERIC,'求购','buff'
+from jiake.game_buff_goods a
+WHERE buy_num>0;
+
+SELECT a.appid,a.good_name,max_buy,min_sell,max_buy-min_sell diff
+,b.platform max_platform,c.platform min_platform
+from
+(
+    SELECT appid,good_name,max(case when good_status='求购' then amount else 0 end) max_buy
+    ,max(case when good_status='在售' then amount else 0 end) min_sell
+    from jiake.game_total a
+    GROUP BY 1,2
+)a
+LEFT JOIN jiake.game_total b on a.appid=b.appid and a.good_name=b.good_name and a.max_buy=b.amount
+LEFT JOIN jiake.game_total c on a.appid=c.appid and a.good_name=c.good_name and a.min_sell=c.amount
+WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>1
+ORDER BY 5 desc
     '''
   engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
   df = pd.read_sql(sql,engine)
