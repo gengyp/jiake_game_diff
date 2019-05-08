@@ -11,17 +11,7 @@ import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
 
-'''
-CREATE TABLE "jiake"."game_igxe_goods" (
-  "index" SERIAL PRIMARY KEY,
-  "appid" int8,
-  "good_name" text COLLATE "default",
-  "amount" text COLLATE "default",
-  "good_status" text COLLATE "default",
-  "good_num" int8,
-  "create_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP
-  )WITH (OIDS=FALSE);
-'''
+
 def get_proxy():
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
   cursor = conn.cursor()
@@ -53,7 +43,7 @@ def get_data(ip_lst):
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     save_data2db(appid,r.text)
     print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
-    time.sleep(0.5)
+    # time.sleep(0.5)
 
   for i in range(circles[1]):
     proxy = {'http': 'http://' + random.choice(ip_lst)}

@@ -11,17 +11,7 @@ import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
 
-'''
-CREATE TABLE "jiake"."game_c5game_goods" (
-  "index" SERIAL PRIMARY KEY,
-  "appid" int8,
-  "good_name" text COLLATE "default",
-  "amount" float8,
-  "good_status" text COLLATE "default",
-  "good_num" int8,
-  "create_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP
-  )WITH (OIDS=FALSE);
-'''
+
 def get_proxy():
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
   cursor = conn.cursor()

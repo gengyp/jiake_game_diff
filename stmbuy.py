@@ -10,39 +10,7 @@ import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
 
-'''
-CREATE TABLE "jiake"."game_stmbuy_goods" (
-  "index" SERIAL PRIMARY KEY,
-  "on_seek_price_max" int8,
-  "on_seek_price_min" int8,
-  "market_name" text COLLATE "default",
-  "on_sale_price_max" int8,
-  "on_sale_price_min" int8,
-  "sale_count" int8,
-  "market_price" int8,
-  "on_sale_count" int8,
-  "on_seek_count" int8,
-  "last_price" int8,
-  "itime" timestamp(6),
-  "utime" timestamp(6),
-  "market_hash_name" text COLLATE "default",
-  "class_id" text,
-  "appid" int8,
-  "create_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP
-  )WITH (OIDS=FALSE);
 
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."on_seek_price_max" IS '最大求购单价';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."on_seek_price_min" IS '最小求购单价';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."market_name" IS '商品中文名称';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."on_sale_price_max" IS '当前最大售价';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."on_sale_price_min" IS '当前最小售价';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."sale_count" IS '累计出售';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."market_price" IS '市场参考价';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."on_sale_count" IS '当前在售数量';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."on_seek_count" IS '当前求购数量';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."last_price" IS '最近成交价';
-COMMENT ON COLUMN "jiake"."game_stmbuy_goods"."appid" IS '游戏代码';
-'''
 def get_proxy():
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
   cursor = conn.cursor()
