@@ -37,23 +37,27 @@ def get_data(ip_lst):
       }
 
     # dota2
-    for i in range(35):
+    for i in range(80):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"row":"20","page":"{}".format(i+1),"appid":"570","category_id":"","showseek":"1","filter":"{}","sort":"-on_seek_price_max"} # dota2 求购
+      # querystring = {"row":"20","page":"{}".format(i+9),"appid":"570","category_id":"","showseek":"1","filter":"{}",
+      #   "sort":"-on_seek_price_max"} # dota2 求购
+      querystring = {"row":"20","page":"{}".format(i+9),"appid":"570","category_id":"","filter":"{}",
+        "sort":"-market_price,-on_sale_count"} # dota2 出售
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       save_data2db(json.loads(r.text))
       print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
-      time.sleep(0.5)
+      time.sleep(0.2)
 
-    time.sleep(5)
+    time.sleep(1)
     # H1Z1
     for i in range(58):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"row":"20","page":"{}".format(i+1),"appid":"433850","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"} # H1Z1 出售
+      querystring = {"row":"20","page":"{}".format(i+1),"appid":"433850","category_id":"","filter":"{}",
+        "sort":"-market_price,-on_sale_count"} # H1Z1 出售
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       save_data2db(json.loads(r.text))
       print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
-      time.sleep(0.5)
+      time.sleep(0.2)
 
     # time.sleep(5)
     # # CS:GO

@@ -10,35 +10,7 @@ import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
 
-'''
-CREATE TABLE "jiake"."game_buff_goods" (
-"index" serial,
-"steam_price" text COLLATE "default",
-"steam_price_cny" text COLLATE "default",
-"market_hash_name" text COLLATE "default",
-"buy_max_price" text COLLATE "default",
-"sell_num" int8,
-"sell_min_price" text COLLATE "default",
-"sell_reference_price" text COLLATE "default",
-"quick_price" text COLLATE "default",
-"name" text COLLATE "default",
-"buy_num" int8,
-"game" text COLLATE "default",
-"goods_id" int8,
-"appid" int8,
-"create_time" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)WITH (OIDS=FALSE);
 
-COMMENT ON COLUMN "jiake"."game_buff_goods"."steam_price" IS 'Steam美元价';
-COMMENT ON COLUMN "jiake"."game_buff_goods"."steam_price_cny" IS 'Steam人名币价';
-COMMENT ON COLUMN "jiake"."game_buff_goods"."buy_max_price" IS '求购最大单价';
-COMMENT ON COLUMN "jiake"."game_buff_goods"."sell_num" IS '当前在售数';
-COMMENT ON COLUMN "jiake"."game_buff_goods"."sell_min_price" IS '当前最小售价';
-COMMENT ON COLUMN "jiake"."game_buff_goods"."name" IS '商品中文名称';
-COMMENT ON COLUMN "jiake"."game_buff_goods"."buy_num" IS '当前求购数量';
-COMMENT ON COLUMN "jiake"."game_buff_goods"."game" IS '游戏名称';
-COMMENT ON COLUMN "jiake"."game_buff_goods"."appid" IS '游戏代码';
-'''
 def get_proxy():
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
   cursor = conn.cursor()
@@ -73,7 +45,7 @@ def get_data(ip_lst):
     # DOTA2 数据量较大，只爬取求购数据
     for i in range(300):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"dota2","page_num":"{}".format(2+i),"sort_by":"price.desc","_":"1556434296404"} # dota2 求购
+      querystring = {"game":"dota2","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"3","max_price":"300","_":"1556434296404"} # dota2 求购
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
         save_data2db(json.loads(r.text))
@@ -83,9 +55,9 @@ def get_data(ip_lst):
 
     # H1Z1 求购数据较少，故爬取出售数据
     time.sleep(5)
-    for i in range(15):
+    for i in range(12):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"h1z1","page_num":"{}".format(2+i),"sort_by":"price.desc","_":"1556461440132"}
+      querystring = {"game":"h1z1","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"3","max_price":"300","_":"1556461440132"}
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
         save_data2db(json.loads(r.text))

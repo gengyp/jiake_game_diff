@@ -107,44 +107,50 @@ union all
 SELECT a.market_hash_name,a.name,b.on_seek_price_max/100.0 seek_price_max,a.sell_min_price::NUMERIC,b.on_seek_price_max/100.0 - a.sell_min_price::NUMERIC diff,'buff' lowplat
 from jiake.game_buff_goods a
 INNER JOIN jiake.game_stmbuy_goods b on a.market_hash_name=b.market_hash_name
-)a WHERE diff >0
+WHERE a.sell_num>0
+)a WHERE diff >1
 ORDER BY 4 desc
 
 -- 版本二
 DROP TABLE jiake.game_total;
 CREATE TABLE jiake.game_total as
-SELECT appid,good_name,amount,good_status,'v5fox' platform
-from jiake.game_v5fox_goods
-union
-SELECT appid,market_name,on_sale_price_min/100.0,'在售','stmbuy'
+SELECT appid,market_name,on_sale_price_min/100.0 amount,'在售' good_status,'stmbuy' platform
 from jiake.game_stmbuy_goods
 WHERE on_sale_count>0
 union
-SELECT appid,good_name,amount,good_status,'c5game'
-from jiake.game_c5game_goods
-union
-SELECT appid,market_name,on_seek_price_max/100.0,'求购','stmbuy'
+SELECT appid,market_name,on_seek_price_max/100.0 amount,'求购' good_status,'stmbuy' platform
 from jiake.game_stmbuy_goods
 WHERE on_seek_count>0
 union
-SELECT appid,name,sell_min_price::NUMERIC,'在售','buff'
+SELECT appid,good_name,amount,good_status,'c5game' platform
+from jiake.game_c5game_goods
+union
+SELECT appid,name,sell_min_price::NUMERIC,'在售' good_status,'buff' platform
 from jiake.game_buff_goods a
 WHERE sell_num>0
 union
-SELECT appid,name,a.buy_max_price::NUMERIC,'求购','buff'
+SELECT appid,name,a.buy_max_price::NUMERIC,'求购' good_status,'buff' platform
 from jiake.game_buff_goods a
-WHERE buy_num>0;
+union
+SELECT appid,good_name,amount::NUMERIC,good_status,'igxe' platform
+from jiake.game_igxe_goods;
 
-SELECT a.appid,a.good_name,max_buy,min_sell,max_buy-min_sell diff
+SELECT a.appid,a.market_name,max_buy,min_sell,max_buy-min_sell diff
 ,b.platform max_platform,c.platform min_platform
 from
 (
-    SELECT appid,good_name,max(case when good_status='求购' then amount else 0 end) max_buy
+    SELECT appid,market_name,max(case when good_status='求购' then amount else 0 end) max_buy
     ,min(case when good_status='在售' then amount end) min_sell
     from jiake.game_total a
     GROUP BY 1,2
 )a
-LEFT JOIN jiake.game_total b on a.appid=b.appid and a.good_name=b.good_name and a.max_buy=b.amount and b.good_status='求购'
-LEFT JOIN jiake.game_total c on a.appid=c.appid and a.good_name=c.good_name and a.min_sell=c.amount and c.good_status='在售'
-WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>1
+LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
+LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
+WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>2
 ORDER BY 5 desc
+
+-- 查询出活跃的商品
+SELECT *
+from jiake.game_buff_goods
+WHERE buy_num>10 and sell_num>10
+and buy_max_price::NUMERIC>10 and sell_min_price::NUMERIC<=60
