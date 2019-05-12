@@ -31,42 +31,39 @@ def get_proxy():
 def get_data(ip_lst):
     # crawl website: https://www.stmbuy.com/dota2
     url = "https://api2.stmbuy.com/gameitem/list.json"
-    headers = {
-      'Origin': "https://www.stmbuy.com",
-      'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"
-      }
+    headers = {'Origin': "https://www.stmbuy.com",
+      'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
 
+    circles = [250,18,200] # 依次循环次数
+    start_page = [3,1,9]
+    # circles = [1,1,1] # test
+    # start_page = [1,1,1]
     # dota2
-    for i in range(80):
+    for i in range(circles[0]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
       # querystring = {"row":"20","page":"{}".format(i+9),"appid":"570","category_id":"","showseek":"1","filter":"{}",
       #   "sort":"-on_seek_price_max"} # dota2 求购
-      querystring = {"row":"20","page":"{}".format(i+9),"appid":"570","category_id":"","filter":"{}",
+      querystring = {"row":"20","page":"{}".format(i + start_page[0]),"appid":"570","category_id":"","filter":"{}",
         "sort":"-market_price,-on_sale_count"} # dota2 出售
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       save_data2db(json.loads(r.text))
-      print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
-      time.sleep(0.2)
 
-    time.sleep(1)
     # H1Z1
-    for i in range(58):
+    for i in range(circles[1]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"row":"20","page":"{}".format(i+1),"appid":"433850","category_id":"","filter":"{}",
+      querystring = {"row":"20","page":"{}".format(i + start_page[1]),"appid":"433850","category_id":"","filter":"{}",
         "sort":"-market_price,-on_sale_count"} # H1Z1 出售
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       save_data2db(json.loads(r.text))
-      print(i+1,">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
-      time.sleep(0.2)
 
-    # time.sleep(5)
-    # # CS:GO
-    # for i in range(100,200):
-    #   proxy = {'http': 'http://' + random.choice(ip_lst)}
-    #   querystring = {"row":"20","page":"{}".format(i+1),"appid":"730","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"} # CS:GO 出售
-    #   r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    #   save_data2db(json.loads(r.text))
-    #   time.sleep(0.5)
+    # CS:GO
+    for i in range(circles[2]):
+      proxy = {'http': 'http://' + random.choice(ip_lst)}
+      querystring = {"row":"20","page":"{}".format(i + start_page[2]),"appid":"730","category_id":"","filter":"{}",
+        "sort":"-market_price,-on_sale_count"} # CS:GO 出售
+      r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+      save_data2db(json.loads(r.text))
+
 
 def save_data2db(dts):
   count = dts['count']
@@ -110,7 +107,7 @@ def save_data2db(dts):
         {}, {},'{}','{}','{}','{}',{})'''.format(*t)
       cursor.execute(sql)
       conn.commit()
-      print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
+      # print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
   except Exception as e:
     raise e
   finally:

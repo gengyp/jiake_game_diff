@@ -1,4 +1,5 @@
 # coding:utf-8
+import re
 import json
 import time
 import random
@@ -30,7 +31,8 @@ def get_proxy():
   return ip_list
 
 def get_data(ip_lst):
-  circles = [100,78,13,6] # 依次循环次数
+  circles = [100,90,16,8,100,74] # 依次循环次数
+  # circles = [1,1,1,1,1,1] # 测试
   print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
   headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
   # dota2
@@ -38,57 +40,73 @@ def get_data(ip_lst):
   appid = 570
   for i in range(circles[0]):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"3","max":"300","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
+    querystring = {"min":"5","max":"2000","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
         "locale":"zh","page":"{}".format(i+1)} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
     print('current page is:{}\t商品总数:{}'.format(i+1,total))
-    time.sleep(0.2)
 
   for i in range(circles[1]):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"2","max":"300","only":"on","k":"","rarity":"","quality":"","hero":"","tag":"",
+    querystring = {"min":"5","max":"2000","only":"on","k":"","rarity":"","quality":"","hero":"","tag":"",
         "sort":"price.desc","page":"{}".format(i+1),"locale":"zh"} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
     print('current page is:{}\t商品总数:{}'.format(i+1,total))
-    time.sleep(0.5)
 
   # H1Z1
   url = "https://www.c5game.com/market.html"
   appid = 433850
   for i in range(circles[2]): # 21
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"3","max":"300","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
+    querystring = {"min":"5","max":"2000","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
         "appid":"433850","locale":"zh","page":"{}".format(i+1)} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
     print('current page is:{}\t商品总数:{}'.format(i+1,total))
-    time.sleep(0.5)
 
   for i in range(circles[3]):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"3","max":"300","only":"on","k":"","rarity":"","quality":"","hero":"","tag":"",
+    querystring = {"min":"5","max":"2000","only":"on","k":"","rarity":"","quality":"","hero":"","tag":"",
          "sort":"price.desc","appid":"433850","locale":"zh","page":"{}".format(i+1)} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
     print('current page is:{}\t商品总数:{}'.format(i+1,total))
-    time.sleep(0.5)
+
+  # csgo
+  url = "https://www.c5game.com/csgo/default/result.html"
+  appid = 730
+  for i in range(circles[4]):
+    proxy = {'http': 'http://' + random.choice(ip_lst)}
+    querystring = {"min":"5","max":"2000","k":"","csgo_filter_category":"","rarity":"","quality":"",
+      "exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)}
+    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+    total = save_data2db(appid,r.text)
+    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+
+  for i in range(circles[5]):
+    proxy = {'http': 'http://' + random.choice(ip_lst)}
+    querystring = {"min":"5","max":"2000","only":"on","k":"","csgo_filter_category":"","rarity":"",
+      "quality":"","exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)}
+    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+    total = save_data2db(appid,r.text)
+    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+
 
 def save_data2db(appid,html):
   tree = etree.HTML(html)
 
   goods_names = tree.xpath('//*[@id="yw0"]/div[1]/ul/li/a/img/@alt')
-  good_statuses = tree.xpath('//*[@id="yw0"]/div[1]/ul/li/p[2]/span[1]/text()')
+  good_statuses = tree.xpath('//*[@id="yw0"]/div[1]/ul/li/p[2]/span[1]/text()[1]')
   amounts = tree.xpath('//*[@id="yw0"]/div[1]/ul/li/p[2]/span[1]/span/text()')
   good_nums = tree.xpath('//*[@id="yw0"]/div[1]/ul/li/p[2]/span[2]/text()')
 
   lst = []
   for i in range(len(goods_names)):
     goods_name = goods_names[i].replace("'",'')
-    amount = eval(amounts[i].split(' ')[1])
-    good_status = good_statuses[i].split(':')[0].replace("求购价","求购").replace("售价","在售")
-    good_num = eval(good_nums[i].split('件')[0])
+    amount = eval(re.search(r'\d.*',amounts[i]).group())
+    good_status = good_statuses[i].strip().split(':')[0].replace("求购价","求购").replace("售价","在售")
+    good_num = eval(good_nums[i].strip().split('件')[0])
     # 以下为英文 解析
     # if ' ' in good_statuses[i].split(':')[0]:
     #   good_status = '求购'

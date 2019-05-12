@@ -29,6 +29,8 @@ def get_proxy():
   return ip_list
 
 def get_data(ip_lst):
+    circles = [381,13,487] # 依次循环次数
+    # circles = [1,1,1] # 测试
     # website https://buff.163.com/market/?game=dota2#tab=buying&page_num=1
     url = "https://buff.163.com/api/market/goods/buying"
     headers = {
@@ -43,39 +45,34 @@ def get_data(ip_lst):
       'X-Requested-With': 'XMLHttpRequest'
         }
     # DOTA2 数据量较大，只爬取求购数据
-    for i in range(300):
+    for i in range(circles[0]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"dota2","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"3","max_price":"300","_":"1556434296404"} # dota2 求购
+      querystring = {"game":"dota2","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1556434296404"} # dota2 求购
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
         save_data2db(json.loads(r.text))
       except Exception as e:
         raise e
-      time.sleep(0.2)
 
     # H1Z1 求购数据较少，故爬取出售数据
-    time.sleep(5)
-    for i in range(12):
+    for i in range(circles[1]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"h1z1","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"3","max_price":"300","_":"1556461440132"}
+      querystring = {"game":"h1z1","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1556461440132"}
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
         save_data2db(json.loads(r.text))
       except Exception as e:
         raise e
-      time.sleep(0.2)
 
-    # # CS:GO 求购数据较少，故爬取出售数据
-    # time.sleep(5)
-    # for i in range(450):
-    #   proxy = {'http': 'http://' + random.choice(ip_lst)}
-    #   querystring = {"game":"csgo","page_num":"{}".format(30+i),"sort_by":"price.desc","_":"1556548044595"}
-    #   try:
-    #     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    #     save_data2db(json.loads(r.text))
-    #   except Exception as e:
-    #     raise e
-    #   time.sleep(0.2)
+    # CS:GO 求购数据较多，故爬取求购数据
+    for i in range(circles[2]):
+      proxy = {'http': 'http://' + random.choice(ip_lst)}
+      querystring = {"game":"csgo","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1557652874396"}
+      try:
+        r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+        save_data2db(json.loads(r.text))
+      except Exception as e:
+        raise e
 
 def save_data2db(dts):
   page_num = dts['data']['page_num']
@@ -92,9 +89,9 @@ def save_data2db(dts):
     steam_price = dt['goods_info']['steam_price']
     steam_price_cny = dt['goods_info']['steam_price_cny']
     market_hash_name = dt['market_hash_name'].replace("'",'')
-    buy_max_price = dt['buy_max_price']
+    buy_max_price = eval(dt['buy_max_price'])
     sell_num = dt['sell_num']
-    sell_min_price = dt['sell_min_price']
+    sell_min_price = eval(dt['sell_min_price'])
     sell_reference_price = dt['sell_reference_price']
     quick_price = dt['quick_price']
     name = dt['name'].replace("'",'')

@@ -82,7 +82,7 @@ ORDER BY 5 desc
   print(r.content)
 
 def main():
-  time_interval = 30
+  time_interval = 40
   while True:
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 buff 平台数据...')
     os.system('python buff_163.py > ./else/buff_163.log')
