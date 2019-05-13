@@ -79,7 +79,7 @@ def save_data2db(dts):
   page_size = dts['data']['page_size']
   total_count = dts['data']['total_count']
   total_page = dts['data']['total_page']
-  print('当前页数：{}商品数量：{}商品总数：{}网页数：{}'.format(page_num,page_size,total_count,total_page))
+  print('current page：{}goods num：{}total num：{}page num：{}'.format(page_num,page_size,total_count,total_page))
 
   # col_name = ['steam_price','steam_price_cny','market_hash_name','buy_max_price'
   #   ,'sell_num','sell_min_price','sell_reference_price','quick_price','name','buy_num','game']
@@ -115,13 +115,13 @@ def save_data2db(dts):
         sell_reference_price,quick_price,name,buy_num,game,goods_id,appid) VALUES('{}','{}', '{}','{}', '{}','{}', '{}','{}', '{}', {},'{}',{},{})'''.format(*t)
       cursor.execute(sql)
       conn.commit()
-      print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
+      # print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
   except Exception as e:
     raise e
   finally:
     cursor.close()
     conn.close()
-  print( ">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
+  # print( ">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
 
 if __name__ == '__main__':
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)

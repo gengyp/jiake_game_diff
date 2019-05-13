@@ -68,7 +68,7 @@ def get_data(ip_lst):
 def save_data2db(dts):
   count = dts['count']
   page = dts['page']
-  print('下一页：{}商品总数：{}'.format(page,count))
+  print('next page:{}\ttotal num:{}'.format(page,count))
 
 
   lst = []

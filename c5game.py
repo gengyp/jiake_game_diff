@@ -31,7 +31,7 @@ def get_proxy():
   return ip_list
 
 def get_data(ip_lst):
-  circles = [100,90,16,8,100,74] # 依次循环次数
+  circles = [100,66,12,5,100,75] # 依次循环次数
   # circles = [1,1,1,1,1,1] # 测试
   print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
   headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
@@ -44,7 +44,7 @@ def get_data(ip_lst):
         "locale":"zh","page":"{}".format(i+1)} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\t goods num:{}'.format(i+1,total))
 
   for i in range(circles[1]):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
@@ -52,7 +52,7 @@ def get_data(ip_lst):
         "sort":"price.desc","page":"{}".format(i+1),"locale":"zh"} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\t goods num:{}'.format(i+1,total))
 
   # H1Z1
   url = "https://www.c5game.com/market.html"
@@ -63,7 +63,7 @@ def get_data(ip_lst):
         "appid":"433850","locale":"zh","page":"{}".format(i+1)} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\t goods num:{}'.format(i+1,total))
 
   for i in range(circles[3]):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
@@ -71,7 +71,7 @@ def get_data(ip_lst):
          "sort":"price.desc","appid":"433850","locale":"zh","page":"{}".format(i+1)} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\t goods num:{}'.format(i+1,total))
 
   # csgo
   url = "https://www.c5game.com/csgo/default/result.html"
@@ -82,7 +82,7 @@ def get_data(ip_lst):
       "exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)}
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\t goods num:{}'.format(i+1,total))
 
   for i in range(circles[5]):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
@@ -90,7 +90,7 @@ def get_data(ip_lst):
       "quality":"","exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)}
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\t goods num:{}'.format(i+1,total))
 
 
 def save_data2db(appid,html):

@@ -30,7 +30,7 @@ def get_proxy():
   return ip_list
 
 def get_data(ip_lst):
-  circles = [274,22,7,1,319,57] # 依次循环次数
+  circles = [274,22,7,1,319,60] # 依次循环次数
   # circles = [1,1,1,1,1,1] # test
   print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
   headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
@@ -43,7 +43,7 @@ def get_data(ip_lst):
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557025475913"} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\tgoods num:{}'.format(i+1,total))
     # time.sleep(0.5)
 
   for i in range(circles[1]):
@@ -52,7 +52,7 @@ def get_data(ip_lst):
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557026884738"} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\tgoods num:{}'.format(i+1,total))
     time.sleep(0.5)
 
   # H1Z1
@@ -64,7 +64,7 @@ def get_data(ip_lst):
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557034298679"} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\tgoods num:{}'.format(i+1,total))
     time.sleep(0.5)
 
   for i in range(circles[3]):
@@ -73,7 +73,7 @@ def get_data(ip_lst):
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557026884738"} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\tgoods num:{}'.format(i+1,total))
     time.sleep(0.5)
 
   # csgo
@@ -87,7 +87,7 @@ def get_data(ip_lst):
 
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\tgoods num:{}'.format(i+1,total))
     time.sleep(0.5)
 
   for i in range(circles[5]):
@@ -97,7 +97,7 @@ def get_data(ip_lst):
       "is_stattrak%5B%5D":["0","0"]} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_data2db(appid,r.text)
-    print('current page is:{}\t商品总数:{}'.format(i+1,total))
+    print('current page is:{}\tgoods num:{}'.format(i+1,total))
     time.sleep(0.5)
 
 def save_data2db(appid,html):
