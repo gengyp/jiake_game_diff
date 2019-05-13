@@ -1,4 +1,6 @@
 *.log
-./ipynb_checkpoints
+.ipynb_checkpoints
 __pycache__/
-./else/ipynb_checkpoints
+./else/.ipynb_checkpoints/
+./else/*.log
+./else/one_page_analyze.ipynb
