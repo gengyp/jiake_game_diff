@@ -9,24 +9,8 @@ import pandas as pd
 import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
+from buff import get_proxy
 
-
-def get_proxy():
-  conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
-  cursor = conn.cursor()
-
-  ip_list = []
-  try:
-      cursor.execute("SELECT content FROM {}.{}".format(cfg.SCHEMA_NAME,cfg.TABLE_NAME))
-      result = cursor.fetchall()
-      for i in result:
-          ip_list.append(i[0])
-  except Exception as e:
-      print (e)
-  finally:
-      cursor.close()
-      conn.close()
-  return ip_list
 
 def get_data(ip_lst):
     # crawl website: https://www.stmbuy.com/dota2
@@ -46,7 +30,7 @@ def get_data(ip_lst):
       querystring = {"row":"20","page":"{}".format(i + start_page[0]),"appid":"570","category_id":"","filter":"{}",
         "sort":"-market_price,-on_sale_count"} # dota2 出售
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      save_data2db(json.loads(r.text))
+      save_stmbuy2db(json.loads(r.text))
 
     # H1Z1
     for i in range(circles[1]):
@@ -54,18 +38,10 @@ def get_data(ip_lst):
       querystring = {"row":"20","page":"{}".format(i + start_page[1]),"appid":"433850","category_id":"","filter":"{}",
         "sort":"-market_price,-on_sale_count"} # H1Z1 出售
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      save_data2db(json.loads(r.text))
-
-    # CS:GO
-    for i in range(circles[2]):
-      proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"row":"20","page":"{}".format(i + start_page[2]),"appid":"730","category_id":"","filter":"{}",
-        "sort":"-market_price,-on_sale_count"} # CS:GO 出售
-      r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      save_data2db(json.loads(r.text))
+      save_stmbuy2db(json.loads(r.text))
 
 
-def save_data2db(dts):
+def save_stmbuy2db(dts):
   count = dts['count']
   page = dts['page']
   print('next page:{}\ttotal num:{}'.format(page,count))

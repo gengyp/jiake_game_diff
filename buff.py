@@ -50,7 +50,7 @@ def get_data(ip_lst):
       querystring = {"game":"dota2","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1556434296404"} # dota2 求购
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-        save_data2db(json.loads(r.text))
+        save_buff2db(json.loads(r.text))
       except Exception as e:
         raise e
 
@@ -60,26 +60,16 @@ def get_data(ip_lst):
       querystring = {"game":"h1z1","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1556461440132"}
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-        save_data2db(json.loads(r.text))
+        save_buff2db(json.loads(r.text))
       except Exception as e:
         raise e
 
-    # CS:GO 求购数据较多，故爬取求购数据
-    for i in range(circles[2]):
-      proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"csgo","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1557652874396"}
-      try:
-        r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-        save_data2db(json.loads(r.text))
-      except Exception as e:
-        raise e
-
-def save_data2db(dts):
+def save_buff2db(dts):
   page_num = dts['data']['page_num']
   page_size = dts['data']['page_size']
   total_count = dts['data']['total_count']
   total_page = dts['data']['total_page']
-  print('current page：{}goods num：{}total num：{}page num：{}'.format(page_num,page_size,total_count,total_page))
+  print('current page:{}\tgoods num:{}\ttotal num:{}\tpage num:{}'.format(page_num,page_size,total_count,total_page))
 
   # col_name = ['steam_price','steam_price_cny','market_hash_name','buy_max_price'
   #   ,'sell_num','sell_min_price','sell_reference_price','quick_price','name','buy_num','game']

@@ -10,27 +10,11 @@ from lxml import etree
 import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
+from buff import get_proxy
 
-
-def get_proxy():
-  conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
-  cursor = conn.cursor()
-
-  ip_list = []
-  try:
-      cursor.execute("SELECT content FROM {}.{}".format(cfg.SCHEMA_NAME,cfg.TABLE_NAME))
-      result = cursor.fetchall()
-      for i in result:
-          ip_list.append(i[0])
-  except Exception as e:
-      print (e)
-  finally:
-      cursor.close()
-      conn.close()
-  return ip_list
 
 def get_data(ip_lst):
-  circles = [60] # 依次循环次数
+  circles = [50] # 依次循环次数
   # print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
   headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
   # dota2
@@ -38,13 +22,12 @@ def get_data(ip_lst):
   appid = 570
   for i in range(circles[0]):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"keyword":"","min_price":"1.00","max_price":"1000.00","sort_key":"1","sort_type":"2",
+    querystring = {"keyword":"","min_price":"5.00","max_price":"2000.00","sort_key":"1","sort_type":"2",
         "only_flag":"","pageNum":"{}".format(i+1),"pageSize":"25"} # 出售&求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    save_data2db(appid,r.text)
-    time.sleep(0.5)
+    save_v5fox2db(appid,r.text)
 
-def save_data2db(appid,html):
+def save_v5fox2db(appid,html):
   tree = etree.HTML(html)
 
   goods_names = tree.xpath('/html/body/div[6]/div[2]/div[2]/a/@title')

@@ -11,24 +11,8 @@ from lxml import etree
 import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
+from buff import get_proxy
 
-
-def get_proxy():
-  conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
-  cursor = conn.cursor()
-
-  ip_list = []
-  try:
-      cursor.execute("SELECT content FROM {}.{}".format(cfg.SCHEMA_NAME,cfg.TABLE_NAME))
-      result = cursor.fetchall()
-      for i in result:
-          ip_list.append(i[0])
-  except Exception as e:
-      print (e)
-  finally:
-      cursor.close()
-      conn.close()
-  return ip_list
 
 def get_data(ip_lst):
   circles = [100,66,12,5,100,75] # 依次循环次数
@@ -43,7 +27,7 @@ def get_data(ip_lst):
     querystring = {"min":"5","max":"2000","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
         "locale":"zh","page":"{}".format(i+1)} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_data2db(appid,r.text)
+    total = save_c5game2db(appid,r.text)
     print('current page is:{}\t goods num:{}'.format(i+1,total))
 
   for i in range(circles[1]):
@@ -51,7 +35,7 @@ def get_data(ip_lst):
     querystring = {"min":"5","max":"2000","only":"on","k":"","rarity":"","quality":"","hero":"","tag":"",
         "sort":"price.desc","page":"{}".format(i+1),"locale":"zh"} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_data2db(appid,r.text)
+    total = save_c5game2db(appid,r.text)
     print('current page is:{}\t goods num:{}'.format(i+1,total))
 
   # H1Z1
@@ -62,7 +46,7 @@ def get_data(ip_lst):
     querystring = {"min":"5","max":"2000","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
         "appid":"433850","locale":"zh","page":"{}".format(i+1)} # 出售
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_data2db(appid,r.text)
+    total = save_c5game2db(appid,r.text)
     print('current page is:{}\t goods num:{}'.format(i+1,total))
 
   for i in range(circles[3]):
@@ -70,30 +54,10 @@ def get_data(ip_lst):
     querystring = {"min":"5","max":"2000","only":"on","k":"","rarity":"","quality":"","hero":"","tag":"",
          "sort":"price.desc","appid":"433850","locale":"zh","page":"{}".format(i+1)} # 求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_data2db(appid,r.text)
+    total = save_c5game2db(appid,r.text)
     print('current page is:{}\t goods num:{}'.format(i+1,total))
 
-  # csgo
-  url = "https://www.c5game.com/csgo/default/result.html"
-  appid = 730
-  for i in range(circles[4]):
-    proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"5","max":"2000","k":"","csgo_filter_category":"","rarity":"","quality":"",
-      "exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)}
-    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_data2db(appid,r.text)
-    print('current page is:{}\t goods num:{}'.format(i+1,total))
-
-  for i in range(circles[5]):
-    proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"5","max":"2000","only":"on","k":"","csgo_filter_category":"","rarity":"",
-      "quality":"","exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)}
-    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_data2db(appid,r.text)
-    print('current page is:{}\t goods num:{}'.format(i+1,total))
-
-
-def save_data2db(appid,html):
+def save_c5game2db(appid,html):
   tree = etree.HTML(html)
 
   goods_names = tree.xpath('//*[@id="yw0"]/div[1]/ul/li/a/img/@alt')
