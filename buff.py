@@ -6,6 +6,8 @@ import datetime
 import requests
 import psycopg2
 import pandas as pd
+from sqlalchemy import create_engine
+
 import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
@@ -29,8 +31,8 @@ def get_proxy():
   return ip_list
 
 def get_data(ip_lst):
-    circles = [381,13,487] # 依次循环次数
-    # circles = [1,1,1] # 测试
+    circles = [381,13] # 依次循环次数
+    # circles = [1,1] # 测试
     # website https://buff.163.com/market/?game=dota2#tab=buying&page_num=1
     url = "https://buff.163.com/api/market/goods/buying"
     headers = {
@@ -50,7 +52,7 @@ def get_data(ip_lst):
       querystring = {"game":"dota2","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1556434296404"} # dota2 求购
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-        save_buff2db(json.loads(r.text))
+        total = save_buff2db(json.loads(r.text))
       except Exception as e:
         raise e
 
@@ -60,7 +62,7 @@ def get_data(ip_lst):
       querystring = {"game":"h1z1","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1556461440132"}
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-        save_buff2db(json.loads(r.text))
+        total = save_buff2db(json.loads(r.text))
       except Exception as e:
         raise e
 
@@ -69,10 +71,7 @@ def save_buff2db(dts):
   page_size = dts['data']['page_size']
   total_count = dts['data']['total_count']
   total_page = dts['data']['total_page']
-  print('current page:{}\tgoods num:{}\ttotal num:{}\tpage num:{}'.format(page_num,page_size,total_count,total_page))
-
-  # col_name = ['steam_price','steam_price_cny','market_hash_name','buy_max_price'
-  #   ,'sell_num','sell_min_price','sell_reference_price','quick_price','name','buy_num','game']
+  print('current page:{}\tgoods num:{}\ttotal num:{}\tpage num:{}'.format(page_num,page_size,total_count,total_page),end='\r')
 
   lst = []
   for dt in dts['data']['items']:
@@ -92,26 +91,17 @@ def save_buff2db(dts):
 
     lst.append([steam_price,steam_price_cny,market_hash_name,buy_max_price,sell_num
       ,sell_min_price,sell_reference_price,quick_price,name,buy_num,game,goods_id,appid])
-  # df = pd.DataFrame(lst)
-  # df.columns = col_name
 
   # store valid proxies into db.
-  # print ("\n>>>>>>>>>>>>>>>>>>>> Insert to database Start  <<<<<<<<<<<<<<<<<<<<<<")
-  try:
-    conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
-    cursor = conn.cursor()
-    for i,t in enumerate(lst):
-      sql = '''INSERT INTO jiake.game_buff_goods(steam_price,steam_price_cny,market_hash_name,buy_max_price,sell_num,sell_min_price,
-        sell_reference_price,quick_price,name,buy_num,game,goods_id,appid) VALUES('{}','{}', '{}','{}', '{}','{}', '{}','{}', '{}', {},'{}',{},{})'''.format(*t)
-      cursor.execute(sql)
-      conn.commit()
-      # print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
-  except Exception as e:
-    raise e
-  finally:
-    cursor.close()
-    conn.close()
-  # print( ">>>>>>>>>>>>>>>>>>>> Insert to database Ended  <<<<<<<<<<<<<<<<<<<<<<",end='\r')
+  df = pd.DataFrame(lst)
+  col_name = ['steam_price','steam_price_cny','market_hash_name','buy_max_price','sell_num'
+    ,'sell_min_price','sell_reference_price','quick_price','name','buy_num','game','goods_id','appid']
+  df.columns = col_name
+
+  engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+  df.to_sql(name='game_buff_goods',con=engine,schema='jiake',index=False,if_exists='append')
+
+  return len(lst)
 
 if __name__ == '__main__':
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)

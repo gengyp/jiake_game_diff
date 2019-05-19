@@ -105,6 +105,7 @@ def sql2data():
 def main():
   time_interval = 40
   while True:
+    os.system('rm ./else/*.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 buff 平台数据...')
     os.system('python buff.py > ./else/buff.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 stmbuy 平台数据...')

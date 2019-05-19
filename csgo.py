@@ -26,6 +26,7 @@ def get_data(ip_lst):
 
     # buff 求购数据
     url = "https://buff.163.com/api/market/goods/buying"
+    print(url)
     headers = {
       'Accept': 'application/json, text/javascript, */*; q=0.01',
       'Accept-Encoding': 'gzip, deflate, br',
@@ -47,8 +48,10 @@ def get_data(ip_lst):
         raise e
 
     # c5game
+    total_flag = 0
     headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
     url = "https://www.c5game.com/csgo/default/result.html"
+    print(url)
     appid = 730
     for i in range(circles[1]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
@@ -56,7 +59,11 @@ def get_data(ip_lst):
         "exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)}
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       total = save_c5game2db(appid,r.text)
-      print('current page is:{}\t goods num:{}'.format(i+1,total))
+      if total_flag==total:
+        print('current page is:{}\t goods num:{}'.format(i+1,total),end='\r')
+      else:
+        total_flag = total
+        print('current page is:{}\t goods num:{}'.format(i+1,total))
 
     for i in range(circles[2]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
@@ -64,10 +71,15 @@ def get_data(ip_lst):
         "quality":"","exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)}
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       total = save_c5game2db(appid,r.text)
-      print('current page is:{}\t goods num:{}'.format(i+1,total))
+      if total_flag==total:
+        print('current page is:{}\t goods num:{}'.format(i+1,total),end='\r')
+      else:
+        total_flag = total
+        print('current page is:{}\t goods num:{}'.format(i+1,total))
 
     # igxe
     url = "https://www.igxe.cn/csgo/730"
+    print(url)
     appid = eval(url.split('/')[-1])
     for i in range(circles[3]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
@@ -76,7 +88,11 @@ def get_data(ip_lst):
         "is_stattrak%5B%5D":["0","0"]} # 出售
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       total = save_igxe2db(appid,r.text)
-      print('current page is:{}\tgoods num:{}'.format(i+1,total))
+      if total_flag==total:
+        print('current page is:{}\t goods num:{}'.format(i+1,total),end='\r')
+      else:
+        total_flag = total
+        print('current page is:{}\t goods num:{}'.format(i+1,total))
 
     for i in range(circles[4]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
@@ -85,25 +101,41 @@ def get_data(ip_lst):
         "is_stattrak%5B%5D":["0","0"]} # 求购
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       total = save_igxe2db(appid,r.text)
-      print('current page is:{}\tgoods num:{}'.format(i+1,total))
+      if total_flag==total:
+        print('current page is:{}\t goods num:{}'.format(i+1,total),end='\r')
+      else:
+        total_flag = total
+        print('current page is:{}\t goods num:{}'.format(i+1,total))
 
     # stmbuy 出售
     url = "https://api2.stmbuy.com/gameitem/list.json"
+    print(url)
     for i in range(circles[5]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
       querystring = {"row":"20","page":"{}".format(i + 9),"appid":"730","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"}
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      save_stmbuy2db(json.loads(r.text))
+      total = save_stmbuy2db(json.loads(r.text))
+      if total_flag==total:
+        print('current page is:{}\t goods num:{}'.format(i+1,total),end='\r')
+      else:
+        total_flag = total
+        print('current page is:{}\t goods num:{}'.format(i+1,total))
 
     # v5fox
     url = "https://www.v5fox.com/csgo"
+    print(url)
     appid = 730
     for i in range(circles[6]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
       querystring = {"keyword":"","min_price":"5.00","max_price":"","rarity_id":"","exterior_id":"","quality_id":"","sort_key":"1",
         "sort_type":"2","only_flag":"","pageNum":"{}".format(i+1),"pageSize":"25"} # 出售&求购
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      save_v5fox2db(appid,r.text)
+      total = save_v5fox2db(appid,r.text)
+      if total_flag==total:
+        print('current page is:{}\t goods num:{}'.format(i+1,total),end='\r')
+      else:
+        total_flag = total
+        print('current page is:{}\t goods num:{}'.format(i+1,total))
 
 def output2dingding():
   engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
@@ -183,5 +215,8 @@ if __name__ == '__main__':
     output2dingding()
 
     if datetime.datetime.now().hour>=6:
-      time.sleep((29-datetime.datetime.now().hour)*3600)
-      time.sleep((60-datetime.datetime.now().minute)*60)
+      sleep_hour = 29-datetime.datetime.now().hour
+      sleep_minute = 60-datetime.datetime.now().minute
+      print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'sleep:{}\thour {}\tminutes!~~'.format(sleep_hour,sleep_minute))
+      time.sleep(sleep_hour*3600)
+      time.sleep(sleep_minute*60)

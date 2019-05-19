@@ -7,6 +7,8 @@ import requests
 import psycopg2
 import pandas as pd
 from lxml import etree
+from sqlalchemy import create_engine
+
 import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
@@ -15,7 +17,7 @@ from buff import get_proxy
 
 def get_data(ip_lst):
   circles = [274,22,7,1] # 依次循环次数
-  # circles = [1,1,1,1,1,1] # test
+  # circles = [1,1,1,1] # test
   print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
   headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
   # dota2
@@ -72,20 +74,13 @@ def save_igxe2db(appid,html):
     lst.append([appid,goods_name,amounts[i]+amount_subs[i],good_status,good_num])
 
   # store valid proxies into db.
-  # print ("\n>>>>>>>>>>>>>>>>>>>> Insert to database Start  <<<<<<<<<<<<<<<<<<<<<<")
-  try:
-    conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
-    cursor = conn.cursor()
-    for i,t in enumerate(lst):
-      sql = '''INSERT INTO jiake.game_igxe_goods(appid,good_name,amount,good_status,good_num) VALUES({},'{}','{}','{}',{})'''.format(*t)
-      cursor.execute(sql)
-      conn.commit()
-      # print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
-  except Exception as e:
-    raise e
-  finally:
-    cursor.close()
-    conn.close()
+  df = pd.DataFrame(lst)
+  col_name = ['appid','good_name','amount','good_status','good_num']
+  df.columns = col_name
+
+  engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+  df.to_sql(name='game_igxe_goods',con=engine,schema='jiake',index=False,if_exists='append')
+
   return len(goods_names)
 
 if __name__ == '__main__':

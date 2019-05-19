@@ -6,6 +6,8 @@ import datetime
 import requests
 import psycopg2
 import pandas as pd
+from sqlalchemy import create_engine
+
 import sys
 sys.path.insert(0,'../Proxy')
 import config as cfg
@@ -18,10 +20,10 @@ def get_data(ip_lst):
     headers = {'Origin': "https://www.stmbuy.com",
       'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
 
-    circles = [250,18,200] # 依次循环次数
-    start_page = [3,1,9]
-    # circles = [1,1,1] # test
-    # start_page = [1,1,1]
+    # circles = [250,18] # 依次循环次数
+    # start_page = [3,1]
+    circles = [1,1] # test
+    start_page = [1,1]
     # dota2
     for i in range(circles[0]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
@@ -30,7 +32,8 @@ def get_data(ip_lst):
       querystring = {"row":"20","page":"{}".format(i + start_page[0]),"appid":"570","category_id":"","filter":"{}",
         "sort":"-market_price,-on_sale_count"} # dota2 出售
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      save_stmbuy2db(json.loads(r.text))
+      total = save_stmbuy2db(json.loads(r.text))
+      print('current page is:{}\tgoods num:{}'.format(i+1,total))
 
     # H1Z1
     for i in range(circles[1]):
@@ -38,7 +41,8 @@ def get_data(ip_lst):
       querystring = {"row":"20","page":"{}".format(i + start_page[1]),"appid":"433850","category_id":"","filter":"{}",
         "sort":"-market_price,-on_sale_count"} # H1Z1 出售
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      save_stmbuy2db(json.loads(r.text))
+      total = save_stmbuy2db(json.loads(r.text))
+      print('current page is:{}\tgoods num:{}'.format(i+1,total))
 
 
 def save_stmbuy2db(dts):
@@ -67,28 +71,17 @@ def save_stmbuy2db(dts):
 
     lst.append([on_seek_price_max,on_seek_price_min,market_name,on_sale_price_max,on_sale_price_min,sale_count,
                 market_price,on_sale_count,on_seek_count,last_price,itime,utime,market_hash_name,class_id,appid])
-  # new_col = ['on_seek_price_max','on_seek_price_min','market_name','on_sale_price_max','on_sale_price_min',
-  #   'sale_count','market_price','on_sale_count','on_seek_count','last_price','itime','utime','market_hash_name']
-  # df = pd.DataFrame(lst)
-  # df.columns = col_name
 
   # store valid proxies into db.
-  # print ("\n>>>>>>>>>>>>>>>>>>>> Insert to database Start  <<<<<<<<<<<<<<<<<<<<<<")
-  try:
-    conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
-    cursor = conn.cursor()
-    for i,t in enumerate(lst):
-      sql = '''INSERT INTO jiake.game_stmbuy_goods(on_seek_price_max,on_seek_price_min,market_name,on_sale_price_max,on_sale_price_min,sale_count,
-        market_price,on_sale_count,on_seek_count,last_price,itime,utime,market_hash_name,class_id,appid) VALUES({},{}, '{}',{}, {},{}, {},{},
-        {}, {},'{}','{}','{}','{}',{})'''.format(*t)
-      cursor.execute(sql)
-      conn.commit()
-      # print (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"insert successfully."+str(i+1),end='\r')
-  except Exception as e:
-    raise e
-  finally:
-    cursor.close()
-    conn.close()
+  df = pd.DataFrame(lst)
+  col_name = ['on_seek_price_max','on_seek_price_min','market_name','on_sale_price_max','on_sale_price_min','sale_count'
+    ,'market_price','on_sale_count','on_seek_count','last_price','itime','utime','market_hash_name','class_id','appid']
+  df.columns = col_name
+
+  engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+  df.to_sql(name='game_stmbuy_goods',con=engine,schema='jiake',index=False,if_exists='append')
+
+  return len(lst)
 
 if __name__ == '__main__':
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
