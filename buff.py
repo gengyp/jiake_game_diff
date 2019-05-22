@@ -93,14 +93,16 @@ def save_buff2db(dts):
       ,sell_min_price,sell_reference_price,quick_price,name,buy_num,game,goods_id,appid])
 
   # store valid proxies into db.
-  df = pd.DataFrame(lst)
-  col_name = ['steam_price','steam_price_cny','market_hash_name','buy_max_price','sell_num'
-    ,'sell_min_price','sell_reference_price','quick_price','name','buy_num','game','goods_id','appid']
-  df.columns = col_name
+  try:
+    df = pd.DataFrame(lst)
+    col_name = ['steam_price','steam_price_cny','market_hash_name','buy_max_price','sell_num'
+      ,'sell_min_price','sell_reference_price','quick_price','name','buy_num','game','goods_id','appid']
+    df.columns = col_name
 
-  engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
-  df.to_sql(name='game_buff_goods',con=engine,schema='jiake',index=False,if_exists='append')
-
+    engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+    df.to_sql(name='game_buff_goods',con=engine,schema='jiake',index=False,if_exists='append')
+  except:
+    print('error!',df.shape,lst)
   return len(lst)
 
 if __name__ == '__main__':

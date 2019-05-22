@@ -74,12 +74,15 @@ def save_igxe2db(appid,html):
     lst.append([appid,goods_name,amounts[i]+amount_subs[i],good_status,good_num])
 
   # store valid proxies into db.
-  df = pd.DataFrame(lst)
-  col_name = ['appid','good_name','amount','good_status','good_num']
-  df.columns = col_name
+  try:
+    df = pd.DataFrame(lst)
+    col_name = ['appid','good_name','amount','good_status','good_num']
+    df.columns = col_name
 
-  engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
-  df.to_sql(name='game_igxe_goods',con=engine,schema='jiake',index=False,if_exists='append')
+    engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+    df.to_sql(name='game_igxe_goods',con=engine,schema='jiake',index=False,if_exists='append')
+  except:
+    print('error!',df.shape,lst)
 
   return len(goods_names)
 

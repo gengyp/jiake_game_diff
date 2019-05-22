@@ -20,10 +20,10 @@ def get_data(ip_lst):
     headers = {'Origin': "https://www.stmbuy.com",
       'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
 
-    # circles = [250,18] # 依次循环次数
-    # start_page = [3,1]
-    circles = [1,1] # test
-    start_page = [1,1]
+    circles = [250,18] # 依次循环次数
+    start_page = [3,1]
+    # circles = [1,1] # test
+    # start_page = [1,1]
     # dota2
     for i in range(circles[0]):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
@@ -48,7 +48,7 @@ def get_data(ip_lst):
 def save_stmbuy2db(dts):
   count = dts['count']
   page = dts['page']
-  print('next page:{}\ttotal num:{}'.format(page,count))
+  # print('next page:{}\ttotal num:{}'.format(page,count))
 
 
   lst = []
@@ -73,14 +73,16 @@ def save_stmbuy2db(dts):
                 market_price,on_sale_count,on_seek_count,last_price,itime,utime,market_hash_name,class_id,appid])
 
   # store valid proxies into db.
-  df = pd.DataFrame(lst)
-  col_name = ['on_seek_price_max','on_seek_price_min','market_name','on_sale_price_max','on_sale_price_min','sale_count'
-    ,'market_price','on_sale_count','on_seek_count','last_price','itime','utime','market_hash_name','class_id','appid']
-  df.columns = col_name
+  try:
+    df = pd.DataFrame(lst)
+    col_name = ['on_seek_price_max','on_seek_price_min','market_name','on_sale_price_max','on_sale_price_min','sale_count'
+      ,'market_price','on_sale_count','on_seek_count','last_price','itime','utime','market_hash_name','class_id','appid']
+    df.columns = col_name
 
-  engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
-  df.to_sql(name='game_stmbuy_goods',con=engine,schema='jiake',index=False,if_exists='append')
-
+    engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+    df.to_sql(name='game_stmbuy_goods',con=engine,schema='jiake',index=False,if_exists='append')
+  except:
+    print('error!',df.shape,lst)
   return len(lst)
 
 if __name__ == '__main__':

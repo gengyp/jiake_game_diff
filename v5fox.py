@@ -17,7 +17,7 @@ from buff import get_proxy
 
 def get_data(ip_lst):
   circles = [50] # 依次循环次数
-  circles = [1] # test
+  # circles = [1] # test
   # print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
   headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
   # dota2
@@ -47,13 +47,15 @@ def save_v5fox2db(appid,html):
     lst.append([appid,goods_name,amount,good_status,good_num])
 
   # store valid proxies into db.
-  df = pd.DataFrame(lst)
-  col_name = ['appid','good_name','amount','good_status','good_num']
-  df.columns = col_name
+  try:
+    df = pd.DataFrame(lst)
+    col_name = ['appid','good_name','amount','good_status','good_num']
+    df.columns = col_name
 
-  engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
-  df.to_sql(name='game_v5fox_goods',con=engine,schema='jiake',index=False,if_exists='append')
-
+    engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+    df.to_sql(name='game_v5fox_goods',con=engine,schema='jiake',index=False,if_exists='append')
+  except:
+    print('error!',df.shape,lst)
   return len(lst)
 
 
