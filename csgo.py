@@ -174,7 +174,7 @@ def output2dingding():
       )a
       LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
       LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
-      WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>5 and a.appid=730
+      WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>100 and a.appid=730
       ORDER BY 5 desc
     '''
   df = pd.read_sql(sql,engine)

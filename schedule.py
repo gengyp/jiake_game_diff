@@ -78,9 +78,24 @@ def sql2data():
       )a
       LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
       LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
-      WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>5 and a.appid=433850
+      WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>100 and a.appid=730
       ORDER BY 5 desc
     '''
+  sql2 = '''
+    SELECT a.appid,a.market_name,max_buy,min_sell,max_buy-min_sell diff
+      ,b.platform max_platform,c.platform min_platform
+    from
+    (
+      SELECT appid,market_name,max(case when good_status='求购' then amount else 0 end) max_buy
+      ,min(case when good_status='在售' then amount end) min_sell
+      from jiake.game_total a
+      GROUP BY 1,2
+    )a
+    LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
+    LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
+    WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>5 and a.appid=433850
+    ORDER BY 5 desc'''
+
   sql3 = '''
     SELECT a.appid,a.market_name,max_buy,min_sell,max_buy-min_sell diff
       ,b.platform max_platform,c.platform min_platform
@@ -97,9 +112,10 @@ def sql2data():
     ORDER BY 5 desc'''
 
   df = pd.read_sql(sql,engine)
+  df2 = pd.read_sql(sql2,engine)
   df3 = pd.read_sql(sql3,engine)
 
-  return df,df3
+  return df,df2,df3
 
 
 def main():
@@ -119,15 +135,15 @@ def main():
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 输出结果到钉钉...')
     dfs = sql2data()
     output2dingding(dfs)
-    if datetime.datetime.now().hour==0 or (datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)<=time_interval/2):
-      print('It is time to sleep!!!')
-      time.sleep(8*3600-600)
-    elif datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)>time_interval/2:
-      print('Preparing to sleep!~~')
-      time.sleep((58 - datetime.datetime.now().minute)*60)
-    else:
-      print('Today is new day,move on!~~',end='\r')
-      time.sleep(time_interval*60)
+    # if datetime.datetime.now().hour==0 or (datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)<=time_interval/2):
+    #   print('It is time to sleep!!!')
+    #   time.sleep(8*3600-600)
+    # elif datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)>time_interval/2:
+    #   print('Preparing to sleep!~~')
+    #   time.sleep((58 - datetime.datetime.now().minute)*60)
+    # else:
+    # print('Today is new day,move on!~~',end='\r')
+    # time.sleep(time_interval*60)
 
 
 if __name__ == '__main__':

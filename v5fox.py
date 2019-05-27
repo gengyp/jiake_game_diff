@@ -31,6 +31,16 @@ def get_data(ip_lst):
     total = save_v5fox2db(appid,r.text)
     print('current page is:{}\tgoods num:{}'.format(i+1,total))
 
+  # csgo
+  url = "https://www.v5fox.com/csgo"
+  appid = 730
+  for i in range(85):
+    proxy = {'http': 'http://' + random.choice(ip_lst)}
+    querystring = {"keyword":"","min_price":"10.00","max_price":"","rarity_id":"","exterior_id":"","quality_id":"","sort_key":"1",
+      "sort_type":"2","only_flag":"","pageNum":"{}".format(i+1),"pageSize":"25"} # 出售&求购
+    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+    total = save_v5fox2db(appid,r.text)
+
 def save_v5fox2db(appid,html):
   tree = etree.HTML(html)
 

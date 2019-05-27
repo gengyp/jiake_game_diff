@@ -44,6 +44,12 @@ def get_data(ip_lst):
       total = save_stmbuy2db(json.loads(r.text))
       print('current page is:{}\tgoods num:{}'.format(i+1,total))
 
+    # csgo
+    for i in range(60):
+      proxy = {'http': 'http://' + random.choice(ip_lst)}
+      querystring = {"row":"20","page":"{}".format(i + 9),"appid":"730","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"}
+      r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+      total = save_stmbuy2db(json.loads(r.text))
 
 def save_stmbuy2db(dts):
   count = dts['count']

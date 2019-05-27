@@ -47,9 +47,9 @@ def get_data(ip_lst):
       'X-Requested-With': 'XMLHttpRequest'
         }
     # DOTA2 数据量较大，只爬取求购数据
-    for i in range(circles[0]):
+    for i in range(204):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"dota2","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1556434296404"} # dota2 求购
+      querystring = {"game":"dota2","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"10","max_price":"2000","_":"1556434296404"} # dota2 求购
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
         total = save_buff2db(json.loads(r.text))
@@ -57,12 +57,22 @@ def get_data(ip_lst):
         raise e
 
     # H1Z1 求购数据较少，故爬取出售数据
-    for i in range(circles[1]):
+    for i in range(5):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"h1z1","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"5","max_price":"2000","_":"1556461440132"}
+      querystring = {"game":"h1z1","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"10","max_price":"2000","_":"1556461440132"}
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
         total = save_buff2db(json.loads(r.text))
+      except Exception as e:
+        raise e
+
+    # csgo 求购数据较少，故爬取出售数据
+    for i in range(183):
+      proxy = {'http': 'http://' + random.choice(ip_lst)}
+      querystring = {"game":"csgo","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"50","_":"1557652874396"}
+      try:
+        r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+        save_buff2db(json.loads(r.text))
       except Exception as e:
         raise e
 

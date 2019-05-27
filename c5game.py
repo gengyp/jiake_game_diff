@@ -24,18 +24,10 @@ def get_data(ip_lst):
   # dota2
   url = "https://www.c5game.com/dota.html"
   appid = 570
-  for i in range(circles[0]):
+  for i in range(97):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"5","max":"2000","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
-        "locale":"zh","page":"{}".format(i+1)} # 出售
-    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_c5game2db(appid,r.text)
-    print('current page is:{}\t goods num:{}'.format(i+1,total))
-
-  for i in range(circles[1]):
-    proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"5","max":"2000","only":"on","k":"","rarity":"","quality":"","hero":"","tag":"",
-        "sort":"price.desc","page":"{}".format(i+1),"locale":"zh"} # 求购
+    querystring = {"min":"20","max":"2000","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
+        "locale":"zh","page":"{}".format(i+1)} # 出售&求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_c5game2db(appid,r.text)
     print('current page is:{}\t goods num:{}'.format(i+1,total))
@@ -43,21 +35,30 @@ def get_data(ip_lst):
   # H1Z1
   url = "https://www.c5game.com/market.html"
   appid = 433850
-  for i in range(circles[2]): # 21
+  for i in range(12):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"5","max":"2000","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
-        "appid":"433850","locale":"zh","page":"{}".format(i+1)} # 出售
+    querystring = {"min":"5","max":"","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
+        "appid":"433850","locale":"zh","page":"{}".format(i+1)} # 出售&求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_c5game2db(appid,r.text)
     print('current page is:{}\t goods num:{}'.format(i+1,total))
 
-  for i in range(circles[3]):
+  # csgo
+  url = "https://www.c5game.com/csgo/default/result.html"
+  appid = 730
+  for i in range(94):
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"5","max":"2000","only":"on","k":"","rarity":"","quality":"","hero":"","tag":"",
-         "sort":"price.desc","appid":"433850","locale":"zh","page":"{}".format(i+1)} # 求购
+    querystring = {"min":"200","max":"","k":"","csgo_filter_category":"","rarity":"","quality":"",
+      "exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)} # 出售&求购
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_c5game2db(appid,r.text)
-    print('current page is:{}\t goods num:{}'.format(i+1,total))
+
+  for i in range(51):
+    proxy = {'http': 'http://' + random.choice(ip_lst)}
+    querystring = {"min":"50","max":"199","k":"","csgo_filter_category":"","rarity":"","quality":"",
+      "exterior":"","sort":"price.desc","type":"","tag":"","locale":"zh","page":"{}".format(i+1)} # 出售&求购
+    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+    total = save_c5game2db(appid,r.text)
 
 def save_c5game2db(appid,html):
   tree = etree.HTML(html)
