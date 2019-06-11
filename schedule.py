@@ -64,7 +64,7 @@ def sql2data():
       SELECT appid,name,a.buy_max_price::NUMERIC,'求购' good_status,'buff' platform
       from jiake.game_buff_goods a
       union
-      SELECT "appId" appid,name,price,'在售' good_status,'shou' platform
+      SELECT appid,name,price,'在售' good_status,'shou' platform
       from jiake.game_shou_goods
       union
       SELECT appid,good_name,amount::NUMERIC,good_status,'igxe' platform
@@ -122,7 +122,7 @@ def sql2data():
 
 
 def main():
-  time_interval = 40
+  time_interval = 5
   while True:
     os.system('rm ./else/*.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 buff 平台数据...')
