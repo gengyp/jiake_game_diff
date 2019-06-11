@@ -64,7 +64,7 @@ def sql2data():
       SELECT appid,name,a.buy_max_price::NUMERIC,'求购' good_status,'buff' platform
       from jiake.game_buff_goods a
       union
-      SELECT appId appid,name,price,'在售' good_status,'shou' platform
+      SELECT "appId" appid,name,price,'在售' good_status,'shou' platform
       from jiake.game_shou_goods
       union
       SELECT appid,good_name,amount::NUMERIC,good_status,'igxe' platform
@@ -152,3 +152,6 @@ def main():
 
 if __name__ == '__main__':
   main()
+
+  # dfs = sql2data()
+  # output2dingding(dfs)
