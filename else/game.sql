@@ -95,6 +95,22 @@ CREATE TABLE "jiake"."game_v5fox_goods" (
   "create_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP
   )WITH (OIDS=FALSE);
 
+
+CREATE TABLE "jiake"."game_shou_goods" (
+  "id" SERIAL PRIMARY KEY,
+  "appid" int8,
+  "stickerNum" int8,
+  "coolingTime" timestamp(6),
+  "price" float8,
+  "hero" text COLLATE "default",
+  "englishName" text COLLATE "default",
+  "type" text COLLATE "default",
+  "exterior" text COLLATE "default",
+  "artifactId" text COLLATE "default",
+  "name" text COLLATE "default",
+  "create_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP
+)WITH (OIDS=FALSE);
+
 -- 查询出符合条件的商品
 -- 版本一
 SELECT a.name,buy_max_price max_buy_price,sale_price_min min_sale_price,diff,lowplat

@@ -64,6 +64,9 @@ def sql2data():
       SELECT appid,name,a.buy_max_price::NUMERIC,'求购' good_status,'buff' platform
       from jiake.game_buff_goods a
       union
+      SELECT appId appid,name,price,'在售' good_status,'shou' platform
+      from jiake.game_shou_goods
+      union
       SELECT appid,good_name,amount::NUMERIC,good_status,'igxe' platform
       from jiake.game_igxe_goods;
 
@@ -130,20 +133,21 @@ def main():
     os.system('python c5game.py > ./else/c5game.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 igxe 平台数据...')
     os.system('python igxe.py > ./else/igxe.log')
-    print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 v5fox 平台数据...')
-    os.system('python v5fox.py > ./else/v5fox.log')
+    print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 shou 平台数据...')
+    os.system('python shou.py > ./else/shou.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 输出结果到钉钉...')
     dfs = sql2data()
     output2dingding(dfs)
-    # if datetime.datetime.now().hour==0 or (datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)<=time_interval/2):
-    #   print('It is time to sleep!!!')
-    #   time.sleep(8*3600-600)
-    # elif datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)>time_interval/2:
-    #   print('Preparing to sleep!~~')
-    #   time.sleep((58 - datetime.datetime.now().minute)*60)
-    # else:
-    # print('Today is new day,move on!~~',end='\r')
-    # time.sleep(time_interval*60)
+    # 是否夜间运行
+    if datetime.datetime.now().hour==0 or (datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)<=time_interval/2):
+      print('It is time to sleep!!!')
+      time.sleep(8*3600-600)
+    elif datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)>time_interval/2:
+      print('Preparing to sleep!~~')
+      time.sleep((58 - datetime.datetime.now().minute)*60)
+    else:
+      print('Today is new day,move on!~~',end='\r')
+      time.sleep(time_interval*60)
 
 
 if __name__ == '__main__':
