@@ -1,3 +1,16 @@
+CREATE DATABASE linzi;
+CREATE SCHEMA jiake;
+-- buff_igxe_grade table
+CREATE TABLE "jiake"."buff_igxe_grade" (
+"index" serial,
+"name" text COLLATE "default",
+"grade" text COLLATE "default",
+"price" float8,
+"good_status" text COLLATE "default",
+"platform" text COLLATE "default",
+"create_time" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)WITH (OIDS=FALSE);
+
 -- buff_163 table
 CREATE TABLE "jiake"."game_buff_goods" (
 "index" serial,

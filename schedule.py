@@ -8,6 +8,7 @@ import json
 import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine
+from buff_igxe import output_csgo
 
 
 def output2dingding(dfs):
@@ -24,7 +25,7 @@ def output2dingding(dfs):
           },
           "at": {
               "atMobiles": [],
-              "isAtAll": True
+              "isAtAll": False
           }
       }
     else:
@@ -117,12 +118,30 @@ def sql2data():
   df = pd.read_sql(sql,engine)
   df2 = pd.read_sql(sql2,engine)
   df3 = pd.read_sql(sql3,engine)
-
   return df,df2,df3
 
+def csgo2data():
+    engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+    sql = '''
+    SELECT a.name,a.grade,max_buy,min_sell,max_buy - min_sell diff
+    from
+    (SELECT name,grade,min(price) min_sell
+    from jiake.buff_igxe_grade
+    where index>=1633 and good_status='selling'
+    GROUP BY 1,2)a
+    INNER JOIN
+    (SELECT name,grade,max(price) max_buy
+    from jiake.buff_igxe_grade
+    where index>=1633 and good_status='buy'
+    GROUP BY 1,2)b on a."name"=b.name and a.grade=b.grade
+    where max_buy - min_sell>100
+    ORDER BY 5 desc '''
+
+    df = pd.read_sql(sql,engine)
+    return df
 
 def main():
-  time_interval = 5
+  time_interval = 10
   while True:
     os.system('rm ./else/*.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 buff 平台数据...')
@@ -137,16 +156,14 @@ def main():
     os.system('python shou.py > ./else/shou.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 输出结果到钉钉...')
     dfs = sql2data()
+    output_csgo(dfs[0])
     output2dingding(dfs)
+    output2dingding([csgo2data()])
     # 是否夜间运行
-    if datetime.datetime.now().hour==0 or (datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)<=time_interval/2):
+    if datetime.datetime.now().hour==0:
       print('It is time to sleep!!!')
-      time.sleep(8*3600-600)
-    elif datetime.datetime.now().hour==23 and (60-datetime.datetime.now().minute)>time_interval/2:
-      print('Preparing to sleep!~~')
-      time.sleep((58 - datetime.datetime.now().minute)*60)
+      time.sleep(7*3600)
     else:
-      print('Today is new day,move on!~~',end='\r')
       time.sleep(time_interval*60)
 
 

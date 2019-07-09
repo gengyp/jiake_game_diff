@@ -31,58 +31,73 @@ def get_proxy():
   return ip_list
 
 def get_data(ip_lst):
-    circles = [381,13] # 依次循环次数
-    # circles = [1,1] # 测试
     # website https://buff.163.com/market/?game=dota2#tab=buying&page_num=1
-    url = "https://buff.163.com/api/market/goods/buying"
+    # url = "https://buff.163.com/api/market/goods/buying"
+    url = "https://buff.163.com/api/market/goods"
     headers = {
-      'Accept': 'application/json, text/javascript, */*; q=0.01',
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-      'Connection': 'keep-alive',
-      'Cookie': '_ntes_nnid=5095810d461811f7dc838877a17f425e,1537173746258; _ntes_nuid=5095810d461811f7dc838877a17f425e; vjuids=-99dfec9a3.166959e011a.0.4235fdae1b734; vjlast=1540108452.1540108452.30; __oc_uuid=517f3650-ebf0-11e8-8522-790aadc56740; __utma=187553192.28276556.1539135868.1542630585.1542632967.4; __utmz=187553192.1542632967.4.3.utmcsr=open.163.com|utmccn=(referral)|utmcmd=referral|utmcct=/special/cuvocw/qiyecaiwu.html; vinfo_n_f_l_n3=906020b7a134d80f.1.3.1540108449670.1545901070101.1552872008117; _ga=GA1.2.28276556.1539135868; usertrack=ezq0ZVzC/jM0QTkRBF0VAg==; _gid=GA1.2.442229967.1556376581; csrf_token=17b123f4549af663a251cb77dcfe57b56d1251a0; game=dota2; NTES_YD_SESS=LehxiEaGpZbw5rGP55KXBpeGDWxYqfI5OZs0yIjWTTzDv4jcvh2dqALszP7FAa2a.Vg1D14Xx3.CTQ1xMJN8jJ1b.X3mgw6qyhQzlbihLxuhYZOrUEOH0XR5SHikJ3Azra7UwAzSsiNiAQyIpI3X.QKM9.E9maADxUYguN8qSqqwGE5e0m.FsPwAO_r2hGwQQg5TY0ZG8o63GBQTKZjIP5Zxw0FysOtwl1OMw.Ec9ciQK; S_INFO=1556434091|0|3&80##|17826853236; P_INFO=17826853236|1556434091|0|netease_buff|00&99|null&null&null#zhj&330100#10#0#0|&0|null|17826853236; session=1-exfqRmFc-LlCuZ0E5GNLuQoR2f6q6jzNtHcWzX_JkMsb2046372339',
-      'Host': 'buff.163.com',
-      'Referer': 'https://buff.163.com/market/?game=dota2',
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
-      'X-Requested-With': 'XMLHttpRequest'
+       'Accept': 'application/json, text/javascript, */*; q=0.01',
+       'Accept-Encoding': 'gzip, deflate, br',
+       'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+       'Connection': 'keep-alive',
+       'Cookie': 'hb_MA-BFF5-63705950A31C_u=%7B%22utm_source%22%3A%20%22cp-400000000398149%22%2C%22utm_medium%22%3A%20%22share%22%2C%22utm_campaign%22%3A%20%22commission%22%2C%22utm_content%22%3A%20%22%22%2C%22utm_term%22%3A%20%22%22%2C%22promotional_id%22%3A%20%22%22%7D; _ga=GA1.2.320983017.1562153523; _gid=GA1.2.72541875.1562153523; csrf_token=4967b24e13ed63fc7ebf2de0787858e5c4b7eae5; NTES_YD_SESS=rRls4hC6IbdIZbGJkCbbJdteKmjC7DHQ.yusE9wJNNtTxaw1xYbLve95mWlLrn1a50Y4Sg1tPdClKuT4dVt0I_Z5Nno2.W544D6iEevjQT9yNqGD6rgWfAVjMWc.PRet6QkHXetMuczcelE9n9RfilSC7i07IQeTVH_hDzZvMvvXqteBUGTARkQ9hSVq9q4Vi7cUGGuF9G8EOToFX77KoTGA_9ZJvzm8gYBo5YVWugX.S; S_INFO=1562570158|0|3&80##|13175037667; P_INFO=13175037667|1562570158|0|netease_buff|00&99|CN&1562496462&netease_buff#zhj&330100#10#0#0|&0|null|13175037667; session=1-tQ8J6l__sI0UO9iKDrbm0cTLj0noFAw_Jc2WxKVSyk1X2046721749; game=dota2',
+       'Host': 'buff.163.com',
+       'Referer': 'https://buff.163.com/market/?game=dota2',
+       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
+       'X-Requested-With': 'XMLHttpRequest'
         }
     # DOTA2 数据量较大，只爬取求购数据
-    for i in range(204):
+    i = 0
+    while True:
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"dota2","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"10","max_price":"2000","_":"1556434296404"} # dota2 求购
+      querystring = {"game":"dota2","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"10","max_price":"4000","_":"1556434296404"} # dota2 求购
+      i += 1
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-        total = save_buff2db(json.loads(r.text))
+        dts = json.loads(r.text)
+        # buff 开始解析的 页数并不是真正的页数
+        page_num = dts['data']['page_num']
+        total_page = dts['data']['total_page']
+        if page_num<=total_page:
+          total = save_buff2db(dts)
+        else:
+          break
+        print('dota2 current page:{}'.format(page_num),end='\r')
       except Exception as e:
         raise e
+    print('dota2 crawl finished!')
 
-    # H1Z1 求购数据较少，故爬取出售数据
-    for i in range(5):
-      proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"game":"h1z1","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"10","max_price":"2000","_":"1556461440132"}
-      try:
-        r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-        total = save_buff2db(json.loads(r.text))
-      except Exception as e:
-        raise e
+    # # H1Z1 求购数据较少，故爬取出售数据
+    # for i in range(5):
+    #   proxy = {'http': 'http://' + random.choice(ip_lst)}
+    #   querystring = {"game":"h1z1","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"10","max_price":"2000","_":"1556461440132"}
+    #   try:
+    #     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+    #     total = save_buff2db(json.loads(r.text))
+    #   except Exception as e:
+    #     raise e
 
     # csgo 求购数据较少，故爬取出售数据
-    for i in range(183):
+    i = 0
+    while True:
       proxy = {'http': 'http://' + random.choice(ip_lst)}
       querystring = {"game":"csgo","page_num":"{}".format(1+i),"sort_by":"price.desc","min_price":"50","_":"1557652874396"}
+      i += 1
       try:
         r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-        save_buff2db(json.loads(r.text))
+        # buff 开始解析的 页数并不是真正的页数
+        dts = json.loads(r.text)
+        page_num = dts['data']['page_num']
+        total_page = dts['data']['total_page']
+        if page_num<=total_page:
+          total = save_buff2db(dts)
+        else:
+          break
+        print('csgo current page:{}'.format(page_num),end='\r')
       except Exception as e:
         raise e
+    print('csgo crawl finished!')
 
 def save_buff2db(dts):
-  page_num = dts['data']['page_num']
-  page_size = dts['data']['page_size']
-  total_count = dts['data']['total_count']
-  total_page = dts['data']['total_page']
-  print('current page:{}\tgoods num:{}\ttotal num:{}\tpage num:{}'.format(page_num,page_size,total_count,total_page),end='\r')
-
   lst = []
   for dt in dts['data']['items']:
     steam_price = dt['goods_info']['steam_price']

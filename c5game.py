@@ -32,16 +32,16 @@ def get_data(ip_lst):
     total = save_c5game2db(appid,r.text)
     print('current page is:{}\t goods num:{}'.format(i+1,total))
 
-  # H1Z1
-  url = "https://www.c5game.com/market.html"
-  appid = 433850
-  for i in range(12):
-    proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"min":"5","max":"","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
-        "appid":"433850","locale":"zh","page":"{}".format(i+1)} # 出售&求购
-    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_c5game2db(appid,r.text)
-    print('current page is:{}\t goods num:{}'.format(i+1,total))
+  # # H1Z1
+  # url = "https://www.c5game.com/market.html"
+  # appid = 433850
+  # for i in range(12):
+  #   proxy = {'http': 'http://' + random.choice(ip_lst)}
+  #   querystring = {"min":"5","max":"","k":"","rarity":"","quality":"","hero":"","tag":"","sort":"price.desc",
+  #       "appid":"433850","locale":"zh","page":"{}".format(i+1)} # 出售&求购
+  #   r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+  #   total = save_c5game2db(appid,r.text)
+  #   print('current page is:{}\t goods num:{}'.format(i+1,total))
 
   # csgo
   url = "https://www.c5game.com/csgo/default/result.html"

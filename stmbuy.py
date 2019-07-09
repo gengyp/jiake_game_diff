@@ -20,43 +20,42 @@ def get_data(ip_lst):
     headers = {'Origin': "https://www.stmbuy.com",
       'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
 
-    circles = [250,18] # 依次循环次数
-    start_page = [3,1]
-    # circles = [1,1] # test
-    # start_page = [1,1]
     # dota2
-    for i in range(circles[0]):
+    i = 0
+    while True:
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      # querystring = {"row":"20","page":"{}".format(i+9),"appid":"570","category_id":"","showseek":"1","filter":"{}",
-      #   "sort":"-on_seek_price_max"} # dota2 求购
-      querystring = {"row":"20","page":"{}".format(i + start_page[0]),"appid":"570","category_id":"","filter":"{}",
-        "sort":"-market_price,-on_sale_count"} # dota2 出售
+      querystring = {"row":"20","page":"{}".format(i+1),"appid":"570","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"} # dota2 出售
+      i += 1
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       total = save_stmbuy2db(json.loads(r.text))
-      print('current page is:{}\tgoods num:{}'.format(i+1,total))
+      if total is None:
+        break
+      print('current page is:{}'.format(i),end='\r')
 
-    # H1Z1
-    for i in range(circles[1]):
-      proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"row":"20","page":"{}".format(i + start_page[1]),"appid":"433850","category_id":"","filter":"{}",
-        "sort":"-market_price,-on_sale_count"} # H1Z1 出售
-      r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      total = save_stmbuy2db(json.loads(r.text))
-      print('current page is:{}\tgoods num:{}'.format(i+1,total))
+    # # H1Z1
+    # for i in range(circles[1]):
+    #   proxy = {'http': 'http://' + random.choice(ip_lst)}
+    #   querystring = {"row":"20","page":"{}".format(i + start_page[1]),"appid":"433850","category_id":"","filter":"{}",
+    #     "sort":"-market_price,-on_sale_count"} # H1Z1 出售
+    #   r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+    #   total = save_stmbuy2db(json.loads(r.text))
+    #   print('current page is:{}\tgoods num:{}'.format(i+1,total))
 
     # csgo
-    for i in range(60):
+    i = 0
+    while True:
       proxy = {'http': 'http://' + random.choice(ip_lst)}
-      querystring = {"row":"20","page":"{}".format(i + 9),"appid":"730","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"}
+      querystring = {"row":"20","page":"{}".format(i+1),"appid":"730","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"}
+      # querystring = {"row":"20","page":"{}".format(i+1),"appid":"730","category_id":"","filter":"{}","sort":"-on_seek_price_max","showseek":"1"} # 求购
+      i += 1
+
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
       total = save_stmbuy2db(json.loads(r.text))
+      if total is None:
+        break
+      print('current page is:{}'.format(i),end='\r')
 
 def save_stmbuy2db(dts):
-  count = dts['count']
-  page = dts['page']
-  # print('next page:{}\ttotal num:{}'.format(page,count))
-
-
   lst = []
   for dt in dts['data']:
     on_seek_price_max = dt.get('on_seek_price_max',0)
@@ -89,6 +88,7 @@ def save_stmbuy2db(dts):
     df.to_sql(name='game_stmbuy_goods',con=engine,schema='jiake',index=False,if_exists='append')
   except:
     print('error!',df.shape,lst)
+    return None
   return len(lst)
 
 if __name__ == '__main__':

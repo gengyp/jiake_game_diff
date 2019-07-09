@@ -3,7 +3,9 @@
 各个游戏平台游戏求购与在售等信息
 
 ### Construct your database
-
+linux
+step1: install Anaconda3-5.2.0-Linux-x86_64.sh and postgresql-10.
+step2: 执行 ./else/game.sql 文件，其中 代理ip 非空
 
 ### Demo on how to use these program.
 ```python

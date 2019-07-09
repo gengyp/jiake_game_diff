@@ -39,24 +39,24 @@ def get_data(ip_lst):
     total = save_igxe2db(appid,r.text)
     print('current page is:{}\tgoods num:{}'.format(i+1,total))
 
-  # H1Z1
-  url = "https://www.igxe.cn/h1z1/433850"
-  appid = eval(url.split('/')[-1])
-  for i in range(circles[2]): # 21
-    proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"is_buying":"0","is_stattrak[]":["0","0"],"price_from":"10","sort":"2","ctg_id":"0","type_id":"0","page_no":"{}".format(i+1),
-      "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557034298679"} # 出售
-    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_igxe2db(appid,r.text)
-    print('current page is:{}\tgoods num:{}'.format(i+1,total))
+  # # H1Z1
+  # url = "https://www.igxe.cn/h1z1/433850"
+  # appid = eval(url.split('/')[-1])
+  # for i in range(circles[2]): # 21
+  #   proxy = {'http': 'http://' + random.choice(ip_lst)}
+  #   querystring = {"is_buying":"0","is_stattrak[]":["0","0"],"price_from":"10","sort":"2","ctg_id":"0","type_id":"0","page_no":"{}".format(i+1),
+  #     "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557034298679"} # 出售
+  #   r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+  #   total = save_igxe2db(appid,r.text)
+  #   print('current page is:{}\tgoods num:{}'.format(i+1,total))
 
-  for i in range(circles[3]):
-    proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"is_buying":"1","is_stattrak[]":["0","0"],"price_from":"10","sort":"2","ctg_id":"0","type_id":"0","page_no":"{}".format(i+1),
-      "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557026884738"} # 求购
-    r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    total = save_igxe2db(appid,r.text)
-    print('current page is:{}\tgoods num:{}'.format(i+1,total))
+  # for i in range(circles[3]):
+  #   proxy = {'http': 'http://' + random.choice(ip_lst)}
+  #   querystring = {"is_buying":"1","is_stattrak[]":["0","0"],"price_from":"10","sort":"2","ctg_id":"0","type_id":"0","page_no":"{}".format(i+1),
+  #     "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557026884738"} # 求购
+  #   r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
+  #   total = save_igxe2db(appid,r.text)
+  #   print('current page is:{}\tgoods num:{}'.format(i+1,total))
 
   # csgo
   url = "https://www.igxe.cn/csgo/730"
