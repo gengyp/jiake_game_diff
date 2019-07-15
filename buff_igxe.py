@@ -15,8 +15,6 @@ from buff import get_proxy
 '''
 爬取含有 多普勒 的csgo 商品评级详情
 '''
-
-
 buff_url_search = "https://buff.163.com/api/market/goods"
 buff_url_sell = "https://buff.163.com/api/market/goods/sell_order"
 buff_url_buy = "https://buff.163.com/api/market/goods/buy_order"
@@ -36,14 +34,18 @@ def output_csgo(df=None):
   #   ,'爪子刀（★） | 多普勒 (崭新出厂)'
   #   ,'蝴蝶刀（★） | 多普勒 (崭新出厂)'
   #   ,'刺刀（★） | 伽玛多普勒 (崭新出厂)'
+  #   ,'刺刀（★） | 多普勒 (崭新出厂)'
   #   ,'折叠刀（★） | 伽玛多普勒 (崭新出厂)']
   for good in goods_name:
-    if '多普勒' in good:
-        print('crawl good is:{}'.format(good))
-        lst_buff = buff_data(good)
-        lst_igxe = igxe_data(good)
-        save2db(lst_buff)
-        save2db(lst_igxe)
+    try:
+      if '多普勒' in good:
+          print('crawl good is:{}'.format(good))
+          lst_buff = buff_data(good)
+          lst_igxe = igxe_data(good)
+          save2db(lst_buff)
+          save2db(lst_igxe)
+    except:
+      print('error goods',good)
 
 def save2db(lst):
     # store valid proxies into db.
@@ -112,10 +114,14 @@ def igxe_data(good):
     # 查询商品 id
     headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
     querystring = {"keyword":"{}".format(good)}
-    r = requests.get(igxe_url_search,headers=headers, params=querystring)
-    tree = etree.HTML(r.text)
     try:
-        product_id = tree.xpath('//div[@class="dataList"]/a[1]/@href')[0].split('/')[-1]
+        r = requests.get(igxe_url_search,headers=headers, params=querystring)
+        tree = etree.HTML(r.text)
+        goods = tree.xpath('//div[@class="dataList"]/a/div[@class="name"]/@title')
+        goods_url = tree.xpath('//div[@class="dataList"]/a/@href')
+        for g,u in zip(goods,goods_url):
+          if g==good:
+            product_id = u.split('/')[-1]
     except Exception as e:
         raise e
 
@@ -181,5 +187,4 @@ def delete_data():
   conn.close()
 
 if __name__ == '__main__':
-  delete_data()
   output_csgo()

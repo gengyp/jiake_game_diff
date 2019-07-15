@@ -14,39 +14,60 @@ sys.path.insert(0,'../Proxy')
 import config as cfg
 from buff import get_proxy
 
+'''
+dota2 商品数量少，销售和求购可以放到一起，商品起价10
+csgo 商品数量少，销售和求购可以放到一起，商品起价100
+'''
 
 def get_data(ip_lst):
-  circles = [50] # 依次循环次数
+  # circles = [50] # 依次循环次数
   # circles = [1] # test
   # print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
   headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
   # dota2
   url = "https://www.v5fox.com/dota2"
   appid = 570
-  for i in range(circles[0]):
+  i = 0
+  while True:
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"keyword":"","min_price":"5.00","max_price":"2000.00","sort_key":"1","sort_type":"2",
-        "only_flag":"","pageNum":"{}".format(i+1),"pageSize":"25"} # 出售&求购
+    querystring = {"keyword":"","min_price":"10.00","max_price":"","sort_key":"1","sort_type":"2"
+      ,"only_flag":"","pageNum":"{}".format(i+1),"pageSize":"25"} # 出售&求购
+    i += 1
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_v5fox2db(appid,r.text)
-    print('current page is:{}\tgoods num:{}'.format(i+1,total))
+    print('dota2 current page:{}'.format(i),end='\r')
+    # 爬取销售商品 停止条件
+    tree = etree.HTML(r.text)
+    if '下一页' not in tree.xpath('//div[@class="page-con"]/div/a/text()'):
+      break
+  print('dota2 crawl finished!')
 
   # csgo
   url = "https://www.v5fox.com/csgo"
   appid = 730
-  for i in range(85):
+  i = 0
+  while True:
     proxy = {'http': 'http://' + random.choice(ip_lst)}
-    querystring = {"keyword":"","min_price":"10.00","max_price":"","rarity_id":"","exterior_id":"","quality_id":"","sort_key":"1",
-      "sort_type":"2","only_flag":"","pageNum":"{}".format(i+1),"pageSize":"25"} # 出售&求购
+    querystring = {"keyword":"","min_price":"100.00","max_price":"","rarity_id":"","exterior_id":"","quality_id":"","sort_key":"1"
+      ,"sort_type":"1","only_flag":"","pageNum":"{}".format(i+1),"pageSize":"25"} # 出售&求购
+    i += 1
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_v5fox2db(appid,r.text)
+    print('csgo current page:{}'.format(i),end='\r')
+    # 爬取销售商品 停止条件
+    tree = etree.HTML(r.text)
+    if '下一页' not in tree.xpath('//div[@class="page-con"]/div/a/text()'):
+      break
+  print('csgo crawl finished!')
+
+
 
 def save_v5fox2db(appid,html):
   tree = etree.HTML(html)
 
-  goods_names = tree.xpath('/html/body/div[6]/div[2]/div[2]/a/@title')
-  amounts= tree.xpath('/html/body/div[6]/div[2]/div[2]/a/div[1]/div[2]/p/span/text()')
-  good_statuses = tree.xpath('/html/body/div[6]/div[2]/div[2]/a/div[2]/div[2]/text()')
+  goods_names = tree.xpath('//div[@class="list-box clearfix"]/a/div[1]/div[2]/h5/text()')
+  amounts= tree.xpath('//div[@class="list-box clearfix"]/a/div[1]/div[2]/p/span/text()')
+  good_statuses = tree.xpath('//div[@class="list-box clearfix"]/a/div[2]/div[2]/text()')
 
   lst = []
   for i in range(len(goods_names)):

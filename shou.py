@@ -31,6 +31,7 @@ def get_data(ip_lst):
       querystring = {"price_sort":"0","page":"{}".format(i+1),"count":"10"}
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring,verify=False)
       total = save_shou2db(json.loads(r.text),appid=730)
+      print('csgo sell current page is:{}'.format(i+1),end='\r')
 
     # data2
     url = "https://www.50shou.cn/api/store/inventory/570"
@@ -39,12 +40,13 @@ def get_data(ip_lst):
     dts = json.loads(response.text)
     total_pages = dts['pages']
     total_num = dts['total']
-    print('current game pages is:{}\tgoods num is:{}'.format(total_pages,total_num))
+    print('\ncurrent game pages is:{}\tgoods num is:{}'.format(total_pages,total_num))
     for i in range(total_pages):
       proxy = {'http': 'http://' + random.choice(ip_lst)}
       querystring = {"price_sort":"0","page":"{}".format(i+1),"count":"10"}
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring,verify=False)
       total = save_shou2db(json.loads(r.text),appid=570)
+      print('csgo sell current page is:{}'.format(i+1),end='\r')
 
 def save_shou2db(dts,appid):
   lst = []

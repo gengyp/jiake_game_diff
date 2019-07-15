@@ -27,19 +27,32 @@ def get_data(ip_lst):
       querystring = {"row":"20","page":"{}".format(i+1),"appid":"570","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"} # dota2 出售
       i += 1
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      total = save_stmbuy2db(json.loads(r.text))
+      try:
+        total = save_stmbuy2db(json.loads(r.text))
+      except:
+        print('\n',total)
+        break
       if total is None:
         break
-      print('current page is:{}'.format(i),end='\r')
+      print('dota2 current page is:{}'.format(i),end='\r')
+    print('dota2 crawl finished!~~')
 
     # # H1Z1
-    # for i in range(circles[1]):
+    # i = 0
+    # while True:
     #   proxy = {'http': 'http://' + random.choice(ip_lst)}
-    #   querystring = {"row":"20","page":"{}".format(i + start_page[1]),"appid":"433850","category_id":"","filter":"{}",
-    #     "sort":"-market_price,-on_sale_count"} # H1Z1 出售
+    #   querystring = {"row":"20","page":"{}".format(i+1),"appid":"433850","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"} # H1Z1 出售
+    #   i += 1
     #   r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-    #   total = save_stmbuy2db(json.loads(r.text))
-    #   print('current page is:{}\tgoods num:{}'.format(i+1,total))
+    #   try:
+    #     total = save_stmbuy2db(json.loads(r.text))
+    #   except:
+    #     print(total)
+    #     break
+    #   if total is None:
+    #     break
+    #   print('H1Z1 current page is:{}'.format(i),end='\r')
+    # print('H1Z1 crawl finished!~~')
 
     # csgo
     i = 0
@@ -48,12 +61,16 @@ def get_data(ip_lst):
       querystring = {"row":"20","page":"{}".format(i+1),"appid":"730","category_id":"","filter":"{}","sort":"-market_price,-on_sale_count"}
       # querystring = {"row":"20","page":"{}".format(i+1),"appid":"730","category_id":"","filter":"{}","sort":"-on_seek_price_max","showseek":"1"} # 求购
       i += 1
-
       r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
-      total = save_stmbuy2db(json.loads(r.text))
+      try:
+        total = save_stmbuy2db(json.loads(r.text))
+      except:
+        print('\n',total)
+        break
       if total is None:
         break
-      print('current page is:{}'.format(i),end='\r')
+      print('csgo current page is:{}'.format(i),end='\r')
+    print('csgo crawl finished!~~')
 
 def save_stmbuy2db(dts):
   lst = []
@@ -87,7 +104,7 @@ def save_stmbuy2db(dts):
     engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
     df.to_sql(name='game_stmbuy_goods',con=engine,schema='jiake',index=False,if_exists='append')
   except:
-    print('error!',df.shape,lst)
+    print('\nerror!',df.shape,lst)
     return None
   return len(lst)
 

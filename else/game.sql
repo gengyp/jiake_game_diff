@@ -183,3 +183,24 @@ SELECT *
 from jiake.game_buff_goods
 WHERE buy_num>10 and sell_num>10
 and buy_max_price::NUMERIC>10 and sell_min_price::NUMERIC<=60
+
+# buff&igxe 市场 中饰品名含有 多普勒 商品评级差价表
+SELECT a.name,a.grade,max_buy,min_sell,max_buy - min_sell diff,b.platform max_p,a.platform min_p
+from
+(
+    SELECT name,grade,price min_sell,platform
+    from (
+    SELECT *,"row_number"() over(partition by name,grade order by price) num
+    from jiake.buff_igxe_grade
+    where good_status='selling')a where num=1
+)a
+INNER JOIN
+(
+    SELECT name,grade,price max_buy,platform
+    from (
+    SELECT *,"row_number"() over(partition by name,grade order by price desc) num
+    from jiake.buff_igxe_grade
+    where good_status='buy')a where num=1
+)b on a."name"=b.name and a.grade=b.grade
+where max_buy - min_sell>-50
+ORDER BY 5 desc

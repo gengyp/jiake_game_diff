@@ -82,7 +82,7 @@ def sql2data():
       )a
       LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
       LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
-      WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>100 and a.appid=730
+      WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>50 and a.appid=730
       ORDER BY 5 desc
     '''
   sql2 = '''
@@ -97,7 +97,7 @@ def sql2data():
     )a
     LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
     LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
-    WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>5 and a.appid=433850
+    WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>3 and a.appid=433850
     ORDER BY 5 desc'''
 
   sql3 = '''
@@ -112,7 +112,7 @@ def sql2data():
     )a
     LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
     LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
-    WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>5 and a.appid=570
+    WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>3 and a.appid=570
     ORDER BY 5 desc'''
 
   df = pd.read_sql(sql,engine)
@@ -123,18 +123,24 @@ def sql2data():
 def csgo2data():
     engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
     sql = '''
-    SELECT a.name,a.grade,max_buy,min_sell,max_buy - min_sell diff
+    SELECT a.name,a.grade,max_buy,min_sell,max_buy - min_sell diff,b.platform max_p,a.platform min_p
     from
-    (SELECT name,grade,min(price) min_sell
-    from jiake.buff_igxe_grade
-    where index>=1633 and good_status='selling'
-    GROUP BY 1,2)a
+    (
+        SELECT name,grade,price min_sell,platform
+        from (
+        SELECT *,"row_number"() over(partition by name,grade order by price) num
+        from jiake.buff_igxe_grade
+        where good_status='selling')a where num=1
+    )a
     INNER JOIN
-    (SELECT name,grade,max(price) max_buy
-    from jiake.buff_igxe_grade
-    where index>=1633 and good_status='buy'
-    GROUP BY 1,2)b on a."name"=b.name and a.grade=b.grade
-    where max_buy - min_sell>100
+    (
+        SELECT name,grade,price max_buy,platform
+        from (
+        SELECT *,"row_number"() over(partition by name,grade order by price desc) num
+        from jiake.buff_igxe_grade
+        where good_status='buy')a where num=1
+    )b on a."name"=b.name and a.grade=b.grade
+    where max_buy - min_sell>0
     ORDER BY 5 desc '''
 
     df = pd.read_sql(sql,engine)
@@ -154,6 +160,8 @@ def main():
     os.system('python igxe.py > ./else/igxe.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 shou 平台数据...')
     os.system('python shou.py > ./else/shou.log')
+    print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 v5fox 平台数据...')
+    os.system('python v5fox.py > ./else/v5fox.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 输出结果到钉钉...')
     dfs = sql2data()
     output_csgo(dfs[0])

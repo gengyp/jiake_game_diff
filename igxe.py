@@ -16,28 +16,42 @@ from buff import get_proxy
 
 
 def get_data(ip_lst):
-  circles = [177,15,5,1] # 依次循环次数
-  # circles = [1,1,1,1] # test
-  print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
+  # circles = [177,15,5,1] # 依次循环次数
+  # # circles = [1,1,1,1] # test
+  # print('current circles \ndota2:sales-{},buying-{}; \nH1Z1:sales-{},buying-{};'.format(*circles))
   headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
   # dota2
   url = "https://www.igxe.cn/dota2/570"
   appid = eval(url.split('/')[-1])
-  for i in range(circles[0]):
+  i = 0
+  while True:
     proxy = {'http': 'http://' + random.choice(ip_lst)}
     querystring = {"is_buying":"0","is_stattrak[]":["0","0"],"price_from":"10","price_to":"2000","sort":"2","ctg_id":"0","type_id":"0","page_no":"{}".format(i+1),
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557025475913"} # 出售
+    i += 1
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_igxe2db(appid,r.text)
-    print('current page is:{}\tgoods num:{}'.format(i+1,total))
+    print('dota2 sell current page is:{}'.format(i),end='\r')
+    # 爬取销售商品 停止条件
+    tree = etree.HTML(r.text)
+    if '下一页 ' not in tree.xpath('//*[@id="page-content"]/a/text()'):
+      break
+  print('dota2 sell crawl finished!')
 
-  for i in range(circles[1]):
+  i =0
+  while True:
     proxy = {'http': 'http://' + random.choice(ip_lst)}
     querystring = {"is_buying":"1","is_stattrak[]":["0","0"],"price_from":"10","price_to":"2000","sort":"2","ctg_id":"0","type_id":"0","page_no":"{}".format(i+1),
       "page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557026884738"} # 求购
+    i += 1
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_igxe2db(appid,r.text)
-    print('current page is:{}\tgoods num:{}'.format(i+1,total))
+    print('dota2 buy current page is:{}'.format(i),end='\r')
+    # 爬取求购商品 停止条件
+    tree = etree.HTML(r.text)
+    if '下一页 ' not in tree.xpath('//*[@id="page-content"]/a/text()'):
+      break
+  print('dota2 buy crawl finished!')
 
   # # H1Z1
   # url = "https://www.igxe.cn/h1z1/433850"
@@ -61,22 +75,37 @@ def get_data(ip_lst):
   # csgo
   url = "https://www.igxe.cn/csgo/730"
   appid = eval(url.split('/')[-1])
-  for i in range(124):
+  i = 0
+  while True:
     proxy = {'http': 'http://' + random.choice(ip_lst)}
     querystring = {"is_buying":"0","is_stattrak[]":["0","0"],"price_from":"100","sort":"2","ctg_id":"0","type_id":"0",
       "page_no":"{}".format(i+1),"page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557660313335",
       "is_stattrak%5B%5D":["0","0"]} # 出售
+    i += 1
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_igxe2db(appid,r.text)
-    print('current page is:{}\tgoods num:{}'.format(i+1,total))
+    print('csgo sell current page is:{}'.format(i),end='\r')
+    # 爬取销售商品 停止条件
+    tree = etree.HTML(r.text)
+    if '下一页 ' not in tree.xpath('//*[@id="page-content"]/a/text()'):
+      break
+  print('csgo sell crawl finished!')
 
-  for i in range(40):
+  i = 0
+  while True:
     proxy = {'http': 'http://' + random.choice(ip_lst)}
     querystring = {"is_buying":"1","is_stattrak[]":["0","0"],"price_from":"100","sort":"2","ctg_id":"0","type_id":"0",
       "page_no":"{}".format(i+1),"page_size":"20","rarity_id":"0","exterior_id":"0","quality_id":"0","capsule_id":"0","_t":"1557660068590",
       "is_stattrak%5B%5D":["0","0"]} # 求购
+    i += 1
     r = requests.request("GET", url, headers=headers, proxies=proxy, params=querystring)
     total = save_igxe2db(appid,r.text)
+    print('csgo buy current page is:{}'.format(i),end='\r')
+    # 爬取求购商品 停止条件
+    tree = etree.HTML(r.text)
+    if '下一页 ' not in tree.xpath('//*[@id="page-content"]/a/text()'):
+      break
+  print('csgo buy crawl finished!')
 
 def save_igxe2db(appid,html):
   tree = etree.HTML(html)
