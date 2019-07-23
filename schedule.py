@@ -142,9 +142,16 @@ def csgo2data():
     )b on a."name"=b.name and a.grade=b.grade
     where max_buy - min_sell>0
     ORDER BY 5 desc '''
+    sql_qg = '''
+      SELECT *
+      from jiake.game_total
+      WHERE market_name in ('古龙之冠的馈赠','亲笔签名 秘士之求机关炮','熊刀（★） | 虎牙 (略有磨损)')
+      and good_status='求购'
+    '''
 
     df = pd.read_sql(sql,engine)
-    return df
+    df1 = pd.read_sql(sql_qg,engine)
+    return df,df1
 
 def main():
   time_interval = 10
@@ -164,9 +171,10 @@ def main():
     os.system('python v5fox.py > ./else/v5fox.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 输出结果到钉钉...')
     dfs = sql2data()
+    # 将多普勒 数据存入数据库
     output_csgo(dfs[0])
     output2dingding(dfs)
-    output2dingding([csgo2data()])
+    output2dingding(csgo2data())
     # 是否夜间运行
     if datetime.datetime.now().hour==0:
       print('It is time to sleep!!!')
