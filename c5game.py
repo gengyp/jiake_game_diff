@@ -16,7 +16,7 @@ import config as cfg
 from buff import get_proxy
 
 '''
-c5game 最多显示 100 页，销售和求购 混在一起
+c5game 最多显示 100 页，销售和求购 混在一起, 最大爬取100页
 1. 爬取所有 dota2 商品价格大于10的 销售 和 求购 商品
 2. 爬取所有 csgo 商品价格大于100的 销售 和 求购 商品
 '''
@@ -37,6 +37,8 @@ def get_data(ip_lst):
     tree = etree.HTML(r.text)
     if 'purchaseing' in tree.xpath('//div[@class="tab-pane active"]/ul/li/@class'):
       break
+    if i>100:
+      break
   print('dota2 sell crawl finished!')
 
   i = 0
@@ -50,6 +52,8 @@ def get_data(ip_lst):
     # 爬取求购商品 停止条件
     tree = etree.HTML(r.text)
     if 'next disabled' in tree.xpath('//ul[@class="pagination clearfix"]/li/@class'):
+      break
+    if i>100:
       break
   print('dota2 buy crawl finished!')
   # # H1Z1
@@ -79,6 +83,8 @@ def get_data(ip_lst):
     tree = etree.HTML(r.text)
     if 'purchaseing' in tree.xpath('//div[@class="tab-pane active"]/ul/li/@class'):
       break
+    if i>100:
+      break
   print('csgo sell crawl finished!')
 
   i = 0
@@ -93,6 +99,8 @@ def get_data(ip_lst):
     # 爬取求购商品 停止条件
     tree = etree.HTML(r.text)
     if 'next disabled' in tree.xpath('//ul[@class="pagination clearfix"]/li/@class'):
+      break
+    if i>100:
       break
   print('csgo buy crawl finished!')
 

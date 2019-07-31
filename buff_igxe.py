@@ -31,14 +31,15 @@ def output_csgo(df=None):
   delete_data()
   goods_name = list(df['market_name'].values)
   # goods_name = ['M9 刺刀（★） | 伽玛多普勒 (崭新出厂)'
-  #   ,'爪子刀（★） | 多普勒 (崭新出厂)'
-  #   ,'蝴蝶刀（★） | 多普勒 (崭新出厂)'
-  #   ,'刺刀（★） | 伽玛多普勒 (崭新出厂)'
-  #   ,'刺刀（★） | 多普勒 (崭新出厂)'
-  #   ,'折叠刀（★） | 伽玛多普勒 (崭新出厂)']
+    # ,'爪子刀（★） | 多普勒 (崭新出厂)'
+    # ,'蝴蝶刀（★） | 多普勒 (崭新出厂)'
+    # ,'刺刀（★） | 伽玛多普勒 (崭新出厂)'
+    # ,'刺刀（★） | 多普勒 (崭新出厂)'
+    # ,'折叠刀（★） | 伽玛多普勒 (崭新出厂)'
+    # ,'熊刀（★ StatTrak™） | 多普勒 (崭新出厂)']
   for good in goods_name:
     try:
-      if '多普勒' in good:
+      if '多普勒' in good and 'StatTrak' not in good:
           print('crawl good is:{}'.format(good))
           lst_buff = buff_data(good)
           lst_igxe = igxe_data(good)
@@ -46,6 +47,7 @@ def output_csgo(df=None):
           save2db(lst_igxe)
     except:
       print('error goods',good)
+      continue
 
 def save2db(lst):
     # store valid proxies into db.
