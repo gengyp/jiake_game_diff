@@ -8,10 +8,10 @@ import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine
 
-import sys
-sys.path.insert(0,'../Proxy')
-import config as cfg
 from buff import get_proxy
+import sys
+sys.path.insert(0,'./else')
+import config as cfg
 
 
 def get_data(ip_lst):
@@ -101,7 +101,7 @@ def save_stmbuy2db(dts):
       ,'market_price','on_sale_count','on_seek_count','last_price','itime','utime','market_hash_name','class_id','appid']
     df.columns = col_name
 
-    engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+    engine = engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
     df.to_sql(name='game_stmbuy_goods',con=engine,schema='jiake',index=False,if_exists='append')
   except:
     print('\nerror!',df.shape,lst)

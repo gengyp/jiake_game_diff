@@ -9,10 +9,10 @@ import pandas as pd
 from lxml import etree
 from sqlalchemy import create_engine
 
-import sys
-sys.path.insert(0,'../Proxy')
-import config as cfg
 from buff import get_proxy
+import sys
+sys.path.insert(0,'./else')
+import config as cfg
 
 
 def get_data(ip_lst):
@@ -128,7 +128,7 @@ def save_igxe2db(appid,html):
     col_name = ['appid','good_name','amount','good_status','good_num']
     df.columns = col_name
 
-    engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+    engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
     df.to_sql(name='game_igxe_goods',con=engine,schema='jiake',index=False,if_exists='append')
   except:
     print('error!',df.shape,lst)

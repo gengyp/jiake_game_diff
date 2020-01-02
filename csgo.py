@@ -8,16 +8,16 @@ import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine
 
-import sys
-sys.path.insert(0,'../Proxy')
-import config as cfg
-
-from buff import get_proxy
 from buff import save_buff2db
 from c5game import save_c5game2db
 from igxe import save_igxe2db
 from stmbuy import save_stmbuy2db
 from v5fox import save_v5fox2db
+
+from buff import get_proxy
+import sys
+sys.path.insert(0,'./else')
+import config as cfg
 
 
 def get_data(ip_lst):
@@ -138,7 +138,7 @@ def get_data(ip_lst):
         print('current page is:{}\t goods num:{}'.format(i+1,total))
 
 def output2dingding():
-  engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+  engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
   sql = '''
       DROP TABLE jiake.game_total;
       CREATE TABLE jiake.game_total as

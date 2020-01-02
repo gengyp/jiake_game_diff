@@ -10,10 +10,14 @@ import pandas as pd
 from sqlalchemy import create_engine
 from buff_igxe import output_csgo
 
+import sys
+sys.path.insert(0,'./else')
+import config as cfg
 
 def output2dingding(dfs):
   # 这个 url 从 PC 端钉钉群组->管理机器人里获得
-  dingding_url = "https://oapi.dingtalk.com/robot/send?access_token=3f4585affb8636bf1e1d090d1cf09621128c137de2deec3357661ef3351c735b"
+  # dingding_url = "https://oapi.dingtalk.com/robot/send?access_token=3f4585affb8636bf1e1d090d1cf09621128c137de2deec3357661ef3351c735b"
+  dingding_url = 'https://oapi.dingtalk.com/robot/send?access_token=4578dcf86371a576a66bf651da970e66d7930100d3deb8690eca169d089e8236'
   headers = {"Content-Type": "application/json; charset=utf-8"}
 
   for df in dfs:
@@ -43,7 +47,7 @@ def output2dingding(dfs):
     print(r.content)
 
 def sql2data():
-  engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+  engine = engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
   sql = '''
       DROP TABLE jiake.game_total;
       CREATE TABLE jiake.game_total as

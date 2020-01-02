@@ -8,10 +8,11 @@ import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine
 
-import sys
-sys.path.insert(0,'../Proxy')
-import config as cfg
 from buff import get_proxy
+import sys
+sys.path.insert(0,'./else')
+import config as cfg
+
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -69,7 +70,7 @@ def save_shou2db(dts,appid):
     col_name = ['appid','stickerNum','coolingTime','price','hero','englishName','type','exterior','artifactId','name']
     df.columns = col_name
 
-    engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+    engine = engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
     df.to_sql(name='game_shou_goods',con=engine,schema='jiake',index=False,if_exists='append')
   except:
     print('error!',df.shape,lst)
