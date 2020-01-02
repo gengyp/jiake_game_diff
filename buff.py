@@ -9,7 +9,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 import sys
-sys.path.insert(0,'../Proxy')
+sys.path.insert(0,'/Users/gengyanpeng/Desktop/4_xyd/mygithub/Proxy')
 import config as cfg
 
 
@@ -39,7 +39,7 @@ def get_data(ip_lst):
        'Accept-Encoding': 'gzip, deflate, br',
        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
        'Connection': 'keep-alive',
-       'Cookie': 'hb_MA-BFF5-63705950A31C_u=%7B%22utm_source%22%3A%20%22cp-400000000398149%22%2C%22utm_medium%22%3A%20%22share%22%2C%22utm_campaign%22%3A%20%22commission%22%2C%22utm_content%22%3A%20%22%22%2C%22utm_term%22%3A%20%22%22%2C%22promotional_id%22%3A%20%22%22%7D; _ga=GA1.2.320983017.1562153523; _gid=GA1.2.72541875.1562153523; csrf_token=4967b24e13ed63fc7ebf2de0787858e5c4b7eae5; NTES_YD_SESS=rRls4hC6IbdIZbGJkCbbJdteKmjC7DHQ.yusE9wJNNtTxaw1xYbLve95mWlLrn1a50Y4Sg1tPdClKuT4dVt0I_Z5Nno2.W544D6iEevjQT9yNqGD6rgWfAVjMWc.PRet6QkHXetMuczcelE9n9RfilSC7i07IQeTVH_hDzZvMvvXqteBUGTARkQ9hSVq9q4Vi7cUGGuF9G8EOToFX77KoTGA_9ZJvzm8gYBo5YVWugX.S; S_INFO=1562570158|0|3&80##|13175037667; P_INFO=13175037667|1562570158|0|netease_buff|00&99|CN&1562496462&netease_buff#zhj&330100#10#0#0|&0|null|13175037667; session=1-tQ8J6l__sI0UO9iKDrbm0cTLj0noFAw_Jc2WxKVSyk1X2046721749; game=dota2',
+       'Cookie': '_ntes_nnid=0b56d11bd4055e1b542a7cbbb3ccf6df,1569166747627; _ntes_nuid=0b56d11bd4055e1b542a7cbbb3ccf6df; csrf_token=e0a87a957e4325c74051cb9931dc54ff06b1c2d1; _ga=GA1.2.1749636164.1569768266; _gid=GA1.2.308573684.1569768266; NTES_YD_SESS=2R.k6_vg0A.6N.Jgxn5mhPBuM1zR7Hic24_vEDA9Eq1n.6Js.4TFkU2_9VZDUATAEcCunu6KijErmeuiLxIfJxuNEKjRCPokg4e95N042ipGvztKR68fxDxXax4kW1f7lxn22dAAPK9TU2vR4tCfBlvIbkVZaJ1vNT1FDHb7CHL9pAy1F5OvAdG1WYyerraq2BxF614g1VdX5p4hY.A6I.3pjYtPBeFg5pGcD699TF6xB; S_INFO=1569855745|0|3&80##|17826853236; P_INFO=17826853236|1569855745|0|netease_buff|00&99|null&null&null#anh&340100#10#0#0|&0||17826853236; session=1-YlVss0pWHQhczYJCSHQqk_eSiSVZUmDP-54HpB5oZOvd2046372339; Locale-Supported=zh-Hans; _gat_gtag_UA_109989484_1=1; game=dota2',
        'Host': 'buff.163.com',
        'Referer': 'https://buff.163.com/market/?game=dota2',
        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
