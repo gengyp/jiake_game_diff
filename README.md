@@ -6,8 +6,8 @@
 1. install [Anaconda3](https://www.anaconda.com/distribution/#download-section) and [postgresql](https://www.postgresql.org/download/).
 2. 终端执行`psql -h localhost -p 5432 -U postgres -d postgres -t jiake.proxy_ips_games -f ./else/proxy_ips_games.sql`,[数据库连接参数按需修改](https://blog.csdn.net/weixin_42970378/article/details/90599970)。代理ip 入库
 2. 终端执行`psql -h localhost -p 5432 -U postgres -d postgres -t jiake.proxy_ips_games -f ./else/game.sql`,[数据库连接参数按需修改](https://blog.csdn.net/weixin_42970378/article/details/90599970)。建表
-3. `buff.py` line42 换 [buff 平台](https://buff.163.com/market/?game=csgo#tab=selling&page_num=1)登陆进去，任一网页请求 cookies
-4. `schedule.py` line17 更换钉钉机器人连接 
+3. [confi.py](.else/confi.py) line50 换 [buff 平台](https://buff.163.com/market/?game=csgo#tab=selling&page_num=1)登陆进去，任一网页请求 cookies
+4. [confi.py](.else/confi.py) line54 更换钉钉机器人加签密钥、webhook
 5. `buff.py c5game.py csgo.py igxe.py shou.py stmbuy.py v5fox.py`均可 cmd 输入`python buff.py`单独测试,其他平台类似
 6. 测试通过后，运行`python schedule.py`即可
 

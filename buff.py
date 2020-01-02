@@ -39,7 +39,7 @@ def get_data(ip_lst):
        'Accept-Encoding': 'gzip, deflate, br',
        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
        'Connection': 'keep-alive',
-       'Cookie': 'Device-Id=CO6MHUM3HLENoI4mYuwV; Locale-Supported=zh-Hans; game=csgo; _ga=GA1.2.1221107236.1577941304; _gid=GA1.2.1296564522.1577941304; NTES_YD_SESS=oTV4qYnpPvySsJnGQAq2ufCoaP_q8I2DtOYQUo2v7ZdIceKDcQzbiWonkdENW5z5sFaTITeM1XsA9jT16B7gKBTtsMX8aSHiYQjkwtuQo1mhx9gqk3OZ16UcobrFyjmDEnkOMIWjDGzGXQ6C2mH9IzlzyMBk0R3vDMWwbjwFOL0GqBkCg11R_myhiUzDk64dVjDqd.Wu01oIEp64_fHNQ4z64Y7cPAJqC_X5.qcHi.PCL; S_INFO=1577943192|0|3&80##|17826853236; P_INFO=17826853236|1577943192|0|netease_buff|00&99|null&null&null#zhj&330200#10#0#0|&0||17826853236; session=1-138mZct5yZdm5e8qgzD6UNZDnkS6Wq0lEPrpDkQFZIOI2046372339; csrf_token=ImNmYzg5Y2JlZTBmNmViOGYwMzIyYTM2ZWM5YTdkMGM5MWIyMjY2NGMi.EO8SHg.E0zBf8_dGywpZwswDVZmCVOJQ2U; _gat_gtag_UA_109989484_1=1',
+       'Cookie': cfg.buff_cookies,
        'Host': 'buff.163.com',
        'Referer': 'https://buff.163.com/market/?game=dota2',
        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',

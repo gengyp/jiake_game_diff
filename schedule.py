@@ -2,6 +2,10 @@
 # coding: utf-8
 import os
 import time
+import hmac
+import hashlib
+import base64
+import urllib
 import datetime
 import requests
 import json
@@ -15,9 +19,19 @@ sys.path.insert(0,'./else')
 import config as cfg
 
 def output2dingding(dfs):
+  # 钉钉机器人升级后需要 加签
+  timestamp = round(time.time() * 1000)
+  secret_enc = cfg.secret.encode('utf-8')
+  #把timestamp+"\n"+密钥当做签名字符串
+  string_to_sign = '{}\n{}'.format(timestamp, cfg.secret)
+  string_to_sign_enc = string_to_sign.encode('utf-8')
+  #使用HmacSHA256算法计算签名
+  hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
+  #进行Base64 encode把签名参数再进行urlEncode
+  sign = urllib.parse.quote(base64.b64encode(hmac_code))
+
   # 这个 url 从 PC 端钉钉群组->管理机器人里获得
-  # dingding_url = "https://oapi.dingtalk.com/robot/send?access_token=3f4585affb8636bf1e1d090d1cf09621128c137de2deec3357661ef3351c735b"
-  dingding_url = 'https://oapi.dingtalk.com/robot/send?access_token=4578dcf86371a576a66bf651da970e66d7930100d3deb8690eca169d089e8236'
+  webhook_url = cfg.webhook + '&timestamp={}&sign={}'.format(timestamp, sign)
   headers = {"Content-Type": "application/json; charset=utf-8"}
 
   for df in dfs:
@@ -43,7 +57,7 @@ def output2dingding(dfs):
               "isAtAll": False
           }
       }
-    r = requests.post(dingding_url, headers=headers, data=json.dumps(post_data))
+    r = requests.post(webhook_url, headers=headers, data=json.dumps(post_data))
     print(r.content)
 
 def sql2data():
