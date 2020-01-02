@@ -3,15 +3,15 @@
 各个游戏平台游戏求购与在售等信息
 
 ### Construct your database(Mac version) and use these program step by step
-1. install [Anaconda3](https://www.anaconda.com/distribution/#download-section) and [postgresql](https://www.postgresql.org/download/).
-2. 终端执行`psql -h localhost -p 5432 -U postgres -d postgres -t jiake.proxy_ips_games -f ./else/proxy_ips_games.sql`,[数据库连接参数按需修改](https://blog.csdn.net/weixin_42970378/article/details/90599970)。代理ip 入库
-2. 终端执行`psql -h localhost -p 5432 -U postgres -d postgres -t jiake.proxy_ips_games -f ./else/game.sql`,[数据库连接参数按需修改](https://blog.csdn.net/weixin_42970378/article/details/90599970)。建表
-3. [confi.py](.else/confi.py) line50 换 [buff 平台](https://buff.163.com/market/?game=csgo#tab=selling&page_num=1)登陆进去，任一网页请求 cookies
-4. [confi.py](.else/confi.py) line54 更换钉钉机器人加签密钥、webhook
+1. install [Anaconda3](https://www.anaconda.com/distribution/#download-section) and [postgresql](https://www.postgresql.org/download/).安装成功 cmd 可以输入`ipython`测试Anaconda3 是否安装成功。用数据库可视化工具连接 postgresql 测试是否成功。
+2. 终端进入当前目录执行`psql -h localhost -p 5432 -U postgres -d postgres -t jiake.proxy_ips_games -f ./else/proxy_ips_games.sql`,[数据库连接参数按需修改](https://blog.csdn.net/weixin_42970378/article/details/90599970)。代理ip 入库，如果 数据库 postgres 里面有表 jiake.proxy_ips_games 说明运行成功
+2. 终端进入当前目录执行`psql -h localhost -p 5432 -U postgres -d postgres -t jiake.proxy_ips_games -f ./else/game.sql`,[数据库连接参数按需修改](https://blog.csdn.net/weixin_42970378/article/details/90599970)。建表，如果数据库 postgres 目录下有很多 jiake.* 表说明成功。
+3. [config.py](.else/config.py) line50 换 [buff 平台](https://buff.163.com/market/?game=csgo#tab=selling&page_num=1)登陆进去，任一网页请求 cookies
+4. [config.py](.else/config.py) line54 更换钉钉机器人加签密钥、webhook
 5. `buff.py c5game.py csgo.py igxe.py shou.py stmbuy.py v5fox.py`均可 cmd 输入`python buff.py`单独测试,其他平台类似
-6. 测试通过后，运行`python schedule.py`即可
+6. 各个平台单独测试通过后，运行`python schedule.py`即可
 
-备注：需要更换的可以写到配置文件中[confi.py](.else/confi.py)，缺点不方便调试
+备注：需要更换的可以写到配置文件中[config.py](.else/config.py)，缺点不方便调试
 
 ### crawl one good link
 通过单个商品名称，爬取各个平台的价格

@@ -63,7 +63,7 @@ def output2dingding(dfs):
 def sql2data():
   engine = engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
   sql = '''
-      DROP TABLE jiake.game_total;
+      DROP TABLE if exists jiake.game_total;
       CREATE TABLE jiake.game_total as
       SELECT appid,market_name,on_sale_price_min/100.0 amount,'在售' good_status,'stmbuy' platform
       from jiake.game_stmbuy_goods
@@ -139,7 +139,7 @@ def sql2data():
   return df,df2,df3
 
 def csgo2data():
-    engine = create_engine('postgresql+psycopg2://postgres:root@localhost:5432/linzi')
+    engine = engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
     sql = '''
     SELECT a.name,a.grade,max_buy,min_sell,max_buy - min_sell diff,b.platform max_p,a.platform min_p
     from
@@ -190,9 +190,9 @@ def main():
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 输出结果到钉钉...')
     dfs = sql2data()
     # 将多普勒 数据存入数据库
-    output_csgo(dfs[0])
+    # output_csgo(dfs[0])
     output2dingding(dfs)
-    output2dingding(csgo2data())
+    # output2dingding(csgo2data())
     # 是否夜间运行
     if datetime.datetime.now().hour==0:
       print('It is time to sleep!!!')
@@ -206,3 +206,6 @@ if __name__ == '__main__':
 
   # dfs = sql2data()
   # output2dingding(dfs)
+
+  # output_csgo(dfs[0])
+  # output2dingding(csgo2data())
