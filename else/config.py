@@ -13,8 +13,7 @@ page_num = 2
 timeout = 5
 
 # database host
-# host = 'localhost'
-host = '118.89.80.73'
+host = 'localhost'
 
 # database host
 port = 5432
@@ -23,13 +22,13 @@ port = 5432
 user = 'postgres'
 
 # db password
-passwd = 'pgdb_passwd_gyp12*'
+passwd = 'root'
 
 # db name
-DB_NAME = 'linzi'
+DB_NAME = 'postgres'
 
 # schema name
-SCHEMA_NAME = 'games'
+SCHEMA_NAME = 'jiake'
 
 # table name
 TABLE_NAME = 'proxy_ips_games'
