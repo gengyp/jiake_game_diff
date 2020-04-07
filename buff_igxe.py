@@ -55,7 +55,7 @@ def save2db(lst):
         df.columns = col_name
 
         engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
-        df.to_sql(name='buff_igxe_grade',con=engine,schema='jiake',index=False,if_exists='append')
+        df.to_sql(name='buff_igxe_grade',con=engine,schema='{}'.format(cfg.SCHEMA_NAME),index=False,if_exists='append')
     except:
         print('error!',df.shape,lst)
 
@@ -180,7 +180,7 @@ def buff_request(url,querystring):
 def delete_data():
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
   cursor = conn.cursor()
-  sql = "DELETE FROM jiake.buff_igxe_grade"
+  sql = "DELETE FROM {}.buff_igxe_grade".format(cfg.SCHEMA_NAME)
   cursor.execute(sql) # 删除当前数据
   conn.commit()
   cursor.close()

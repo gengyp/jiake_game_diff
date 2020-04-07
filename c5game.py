@@ -127,7 +127,7 @@ def save_c5game2db(appid,html):
     df.columns = col_name
 
     engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
-    df.to_sql(name='game_c5game_goods',con=engine,schema='jiake',index=False,if_exists='append')
+    df.to_sql(name='game_c5game_goods',con=engine,schema='{}'.format(cfg.SCHEMA_NAME),index=False,if_exists='append')
   except:
     print('error!',df.shape,lst)
 
@@ -137,7 +137,7 @@ def save_c5game2db(appid,html):
 if __name__ == '__main__':
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
   cursor = conn.cursor()
-  sql = "DELETE FROM jiake.game_c5game_goods"
+  sql = "DELETE FROM {}.game_c5game_goods".format(cfg.SCHEMA_NAME)
   cursor.execute(sql) # 删除当前数据
   conn.commit()
   cursor.close()

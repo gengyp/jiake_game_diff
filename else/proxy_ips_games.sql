@@ -20,12 +20,12 @@ SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
-CREATE Schema if not exists jiake;
+CREATE Schema if not exists games;
 --
--- Name: proxy_ips_games; Type: TABLE; Schema: jiake; Owner: postgres
+-- Name: proxy_ips_games; Type: TABLE; Schema: games; Owner: postgres
 --
 
-CREATE TABLE jiake.proxy_ips_games (
+CREATE TABLE games.proxy_ips_games (
     id_ integer NOT NULL,
     content character varying(30) NOT NULL,
     test_times integer DEFAULT 1 NOT NULL,
@@ -37,13 +37,13 @@ CREATE TABLE jiake.proxy_ips_games (
 );
 
 
-ALTER TABLE jiake.proxy_ips_games OWNER TO postgres;
+ALTER TABLE games.proxy_ips_games OWNER TO postgres;
 
 --
--- Name: proxy_ips_games_id__seq; Type: SEQUENCE; Schema: jiake; Owner: postgres
+-- Name: proxy_ips_games_id__seq; Type: SEQUENCE; Schema: games; Owner: postgres
 --
 
-CREATE SEQUENCE jiake.proxy_ips_games_id__seq
+CREATE SEQUENCE games.proxy_ips_games_id__seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -52,27 +52,27 @@ CREATE SEQUENCE jiake.proxy_ips_games_id__seq
     CACHE 1;
 
 
-ALTER TABLE jiake.proxy_ips_games_id__seq OWNER TO postgres;
+ALTER TABLE games.proxy_ips_games_id__seq OWNER TO postgres;
 
 --
--- Name: proxy_ips_games_id__seq; Type: SEQUENCE OWNED BY; Schema: jiake; Owner: postgres
+-- Name: proxy_ips_games_id__seq; Type: SEQUENCE OWNED BY; Schema: games; Owner: postgres
 --
 
-ALTER SEQUENCE jiake.proxy_ips_games_id__seq OWNED BY jiake.proxy_ips_games.id_;
-
-
---
--- Name: proxy_ips_games id_; Type: DEFAULT; Schema: jiake; Owner: postgres
---
-
-ALTER TABLE ONLY jiake.proxy_ips_games ALTER COLUMN id_ SET DEFAULT nextval('jiake.proxy_ips_games_id__seq'::regclass);
+ALTER SEQUENCE games.proxy_ips_games_id__seq OWNED BY games.proxy_ips_games.id_;
 
 
 --
--- Data for Name: proxy_ips_games; Type: TABLE DATA; Schema: jiake; Owner: postgres
+-- Name: proxy_ips_games id_; Type: DEFAULT; Schema: games; Owner: postgres
 --
 
-COPY jiake.proxy_ips_games (id_, content, test_times, failure_times, success_rate, avg_response_time, score, create_time) FROM stdin;
+ALTER TABLE ONLY games.proxy_ips_games ALTER COLUMN id_ SET DEFAULT nextval('games.proxy_ips_games_id__seq'::regclass);
+
+
+--
+-- Data for Name: proxy_ips_games; Type: TABLE DATA; Schema: games; Owner: postgres
+--
+
+COPY games.proxy_ips_games (id_, content, test_times, failure_times, success_rate, avg_response_time, score, create_time) FROM stdin;
 1	117.69.201.233:9999	1	0	0	1	2.5	2020-01-02 08:52:29.426603
 2	60.211.218.78:53281	1	0	0	1	2.5	2020-01-02 08:52:29.46435
 3	49.77.208.251:9999	1	0	0	1	2.5	2020-01-02 08:52:29.466565
@@ -620,17 +620,17 @@ COPY jiake.proxy_ips_games (id_, content, test_times, failure_times, success_rat
 
 
 --
--- Name: proxy_ips_games_id__seq; Type: SEQUENCE SET; Schema: jiake; Owner: postgres
+-- Name: proxy_ips_games_id__seq; Type: SEQUENCE SET; Schema: games; Owner: postgres
 --
 
-SELECT pg_catalog.setval('jiake.proxy_ips_games_id__seq', 543, true);
+SELECT pg_catalog.setval('games.proxy_ips_games_id__seq', 543, true);
 
 
 --
--- Name: proxy_ips_games proxy_ips_games_pkey; Type: CONSTRAINT; Schema: jiake; Owner: postgres
+-- Name: proxy_ips_games proxy_ips_games_pkey; Type: CONSTRAINT; Schema: games; Owner: postgres
 --
 
-ALTER TABLE ONLY jiake.proxy_ips_games
+ALTER TABLE ONLY games.proxy_ips_games
     ADD CONSTRAINT proxy_ips_games_pkey PRIMARY KEY (id_);
 
 

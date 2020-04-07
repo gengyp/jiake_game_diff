@@ -35,15 +35,17 @@ def get_data(ip_lst):
     # url = "https://buff.163.com/api/market/goods/buying"
     url = "https://buff.163.com/api/market/goods"
     headers = {
-       'Accept': 'application/json, text/javascript, */*; q=0.01',
-       'Accept-Encoding': 'gzip, deflate, br',
-       'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-       'Connection': 'keep-alive',
-       'Cookie': cfg.buff_cookies,
-       'Host': 'buff.163.com',
-       'Referer': 'https://buff.163.com/market/?game=dota2',
-       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
-       'X-Requested-With': 'XMLHttpRequest'
+'Accept': 'application/json, text/javascript, */*; q=0.01',
+'Accept-Encoding': 'gzip, deflate, br',
+'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+'Connection': 'keep-alive',
+'Cookie': cfg.buff_cookies,
+'Host': 'buff.163.com',
+'Referer': 'https://buff.163.com/market/?game=dota2',
+'Sec-Fetch-Mode': 'cors',
+'Sec-Fetch-Site': 'same-origin',
+'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36',
+'X-Requested-With': 'XMLHttpRequest'
         }
     # DOTA2 数据量较大，只爬取求购数据
     i = 0
@@ -123,17 +125,19 @@ def save_buff2db(dts):
     col_name = ['steam_price','steam_price_cny','market_hash_name','buy_max_price','sell_num'
       ,'sell_min_price','sell_reference_price','quick_price','name','buy_num','game','goods_id','appid']
     df.columns = col_name
+    conn_info = 'postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME)
+    engine = create_engine(conn_info)
+    # print(conn_info)
 
-    engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
-    df.to_sql(name='game_buff_goods',con=engine,schema='jiake',index=False,if_exists='append')
+    df.to_sql(name='game_buff_goods',con=engine,schema='{}'.format(cfg.SCHEMA_NAME),index=False,if_exists='append')
   except:
-    print('error!',df.shape,lst)
+    print('error!',df.shape)
   return len(lst)
 
 if __name__ == '__main__':
   conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
   cursor = conn.cursor()
-  sql = "DELETE FROM jiake.game_buff_goods"
+  sql = "DELETE FROM {}.game_buff_goods".format(cfg.SCHEMA_NAME)
   cursor.execute(sql) # 删除当前数据
   conn.commit()
   cursor.close()

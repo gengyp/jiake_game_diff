@@ -63,45 +63,46 @@ def output2dingding(dfs):
 def sql2data():
   engine = engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cfg.user,cfg.passwd,cfg.host,cfg.port,cfg.DB_NAME))
   sql = '''
-      DROP TABLE if exists jiake.game_total;
-      CREATE TABLE jiake.game_total as
+      DROP TABLE if exists games.game_total;
+      CREATE TABLE games.game_total as
       SELECT appid,market_name,on_sale_price_min/100.0 amount,'在售' good_status,'stmbuy' platform
-      from jiake.game_stmbuy_goods
+      from games.game_stmbuy_goods
       WHERE on_sale_count>0
       union
       SELECT appid,market_name,on_seek_price_max/100.0 amount,'求购' good_status,'stmbuy' platform
-      from jiake.game_stmbuy_goods
+      from games.game_stmbuy_goods
       WHERE on_seek_count>0
       union
       SELECT appid,good_name,amount,good_status,'c5game' platform
-      from jiake.game_c5game_goods
+      from games.game_c5game_goods
       union
       SELECT appid,name,sell_min_price::NUMERIC,'在售' good_status,'buff' platform
-      from jiake.game_buff_goods a
+      from games.game_buff_goods a
       WHERE sell_num>0
       union
       SELECT appid,name,a.buy_max_price::NUMERIC,'求购' good_status,'buff' platform
-      from jiake.game_buff_goods a
+      from games.game_buff_goods a
       union
       SELECT appid,name,price,'在售' good_status,'shou' platform
-      from jiake.game_shou_goods
+      from games.game_shou_goods
       union
       SELECT appid,good_name,amount::NUMERIC,good_status,'igxe' platform
-      from jiake.game_igxe_goods;
+      from games.game_igxe_goods;
 
-      SELECT a.appid,a.market_name,max_buy,min_sell,max_buy-min_sell diff
-      ,b.platform max_platform,c.platform min_platform
+      SELECT a.market_name,max_buy,min_sell,max_buy-min_sell diff
+      ,b.platform max_p,c.platform min_p
       from
       (
           SELECT appid,market_name,max(case when good_status='求购' then amount else 0 end) max_buy
           ,min(case when good_status='在售' then amount end) min_sell
-          from jiake.game_total a
+          from games.game_total a
           GROUP BY 1,2
       )a
-      LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
-      LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
+      LEFT JOIN games.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
+      LEFT JOIN games.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
       WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>50 and a.appid=730
-      ORDER BY 5 desc
+      and a.market_name not like '%%多普勒%%'
+      ORDER BY 4 desc
     '''
   sql2 = '''
     SELECT a.appid,a.market_name,max_buy,min_sell,max_buy-min_sell diff
@@ -110,11 +111,11 @@ def sql2data():
     (
       SELECT appid,market_name,max(case when good_status='求购' then amount else 0 end) max_buy
       ,min(case when good_status='在售' then amount end) min_sell
-      from jiake.game_total a
+      from games.game_total a
       GROUP BY 1,2
     )a
-    LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
-    LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
+    LEFT JOIN games.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
+    LEFT JOIN games.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
     WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>3 and a.appid=433850
     ORDER BY 5 desc'''
 
@@ -125,11 +126,11 @@ def sql2data():
     (
       SELECT appid,market_name,max(case when good_status='求购' then amount else 0 end) max_buy
       ,min(case when good_status='在售' then amount end) min_sell
-      from jiake.game_total a
+      from games.game_total a
       GROUP BY 1,2
     )a
-    LEFT JOIN jiake.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
-    LEFT JOIN jiake.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
+    LEFT JOIN games.game_total b on a.appid=b.appid and a.market_name=b.market_name and a.max_buy=b.amount and b.good_status='求购'
+    LEFT JOIN games.game_total c on a.appid=c.appid and a.market_name=c.market_name and a.min_sell=c.amount and c.good_status='在售'
     WHERE max_buy>0 and min_sell>0 and max_buy-min_sell>3 and a.appid=570
     ORDER BY 5 desc'''
 
@@ -147,7 +148,7 @@ def csgo2data():
         SELECT name,grade,price min_sell,platform
         from (
         SELECT *,"row_number"() over(partition by name,grade order by price) num
-        from jiake.buff_igxe_grade
+        from games.buff_igxe_grade
         where good_status='selling')a where num=1
     )a
     INNER JOIN
@@ -155,14 +156,14 @@ def csgo2data():
         SELECT name,grade,price max_buy,platform
         from (
         SELECT *,"row_number"() over(partition by name,grade order by price desc) num
-        from jiake.buff_igxe_grade
+        from games.buff_igxe_grade
         where good_status='buy')a where num=1
     )b on a."name"=b.name and a.grade=b.grade
     where max_buy - min_sell>0
     ORDER BY 5 desc '''
     sql_qg = '''
       SELECT *
-      from jiake.game_total
+      from games.game_total
       WHERE market_name in ('古龙之冠的馈赠','亲笔签名 秘士之求机关炮','熊刀（★） | 虎牙 (略有磨损)')
       and good_status='求购'
     '''
@@ -172,8 +173,8 @@ def csgo2data():
     return df,df1
 
 def main():
-  time_interval = 10
-  while True:
+  # time_interval = 10
+  # while True:
     os.system('rm ./else/*.log')
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' 爬取 buff 平台数据...')
     os.system('python buff.py > ./else/buff.log')
@@ -193,12 +194,13 @@ def main():
     # output_csgo(dfs[0])
     output2dingding(dfs)
     # output2dingding(csgo2data())
-    # 是否夜间运行
-    if datetime.datetime.now().hour==0:
-      print('It is time to sleep!!!')
-      time.sleep(7*3600)
-    else:
-      time.sleep(time_interval*60)
+
+    # # 是否夜间运行
+    # if datetime.datetime.now().hour==0:
+    #   print('It is time to sleep!!!')
+    #   time.sleep(7*3600)
+    # else:
+    #   time.sleep(time_interval*60)
 
 
 if __name__ == '__main__':
