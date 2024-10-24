@@ -12,11 +12,9 @@ from buff import save_buff2db
 from c5game import save_c5game2db
 from igxe import save_igxe2db
 from stmbuy import save_stmbuy2db
-from v5fox import save_v5fox2db
+from config import save_v5fox2db
 
 from buff import get_proxy
-import sys
-sys.path.insert(0,'./else')
 import config as cfg
 
 

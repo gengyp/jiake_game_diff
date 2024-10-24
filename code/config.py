@@ -22,13 +22,13 @@ port = 5432
 user = 'postgres'
 
 # db password
-passwd = 'root'
+passwd = 'pgdb_passwd_gyp12*'
 
 # db name
-DB_NAME = 'postgres'
+DB_NAME = 'linzi'
 
 # schema name
-SCHEMA_NAME = 'jiake'
+SCHEMA_NAME = 'games'
 
 # table name
 TABLE_NAME = 'proxy_ips_games'
@@ -51,7 +51,51 @@ buff_cookies = '_ntes_nnid=a0b7340d264da0230b132d3464878dfc,1580284684086; _ntes
 
 # dingding robot parms
 # 设置钉钉机器人时，选择--加签--复制密钥 放入 secret 中
-secret = 'SECda6dbd05930a5ae9e0c6c14359811f14012ba38c38b9baa0ba64c61cce4d8fdb'
+secret = 'SEC943c310fe8ee595f6ab04f8958346d83afaadd908a0ab087bbabab346577227c'
 # webhook 复制到下方
-webhook = 'https://oapi.dingtalk.com/robot/send?access_token=2e1da23001b398c06162ca9c8ad91467d835cf7c9f29e93a4cc9ef68d376490f'
+webhook = 'https://oapi.dingtalk.com/robot/send?access_token=1fee784322cd65a5e4832dccb570660dd6c78ee3b986d2c2043a96ae15deef80'
 
+import psycopg2
+def mod_data_pg(sql):
+    '''
+    创建表、插入、删除、更新等无结果返回 sql
+    '''
+    try:
+        conn = psycopg2.connect(user="postgres",password='{}'.format(passwd)
+                                , host="{}".format(host), port=5432,dbname='linzi')
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(e)
+
+from lxml import etree
+from sqlalchemy import create_engine
+def save_v5fox2db(appid,html):
+  tree = etree.HTML(html)
+
+  goods_names = tree.xpath('//div[@class="list-box clearfix"]/a/div[1]/div[2]/h5/text()')
+  amounts= tree.xpath('//div[@class="list-box clearfix"]/a/div[1]/div[2]/p/span/text()')
+  good_statuses = tree.xpath('//div[@class="list-box clearfix"]/a/div[2]/div[2]/text()')
+
+  lst = []
+  for i in range(len(goods_names)):
+    goods_name = goods_names[i].replace("'",'')
+    amount = eval(amounts[i])
+    good_status = good_statuses[i].split('件 ')[1].replace("需求","求购")
+    good_num = eval(good_statuses[i].split('件')[0])
+    lst.append([appid,goods_name,amount,good_status,good_num])
+
+  # store valid proxies into db.
+  try:
+    df = pd.DataFrame(lst)
+    col_name = ['appid','good_name','amount','good_status','good_num']
+    df.columns = col_name
+
+    engine = engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(user,passwd,host,port,DB_NAME))
+    df.to_sql(name='game_v5fox_goods',con=engine,schema='{}'.format(SCHEMA_NAME),index=False,if_exists='append')
+  except:
+    print('error!',df.shape,lst)
+  return len(lst)

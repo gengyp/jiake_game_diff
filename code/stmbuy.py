@@ -109,13 +109,10 @@ def save_stmbuy2db(dts):
   return len(lst)
 
 if __name__ == '__main__':
-  conn = psycopg2.connect(host=cfg.host, port=cfg.port, user=cfg.user, password=cfg.passwd,database=cfg.DB_NAME)
-  cursor = conn.cursor()
+
+  # clear table
   sql = "DELETE FROM {}.game_stmbuy_goods".format(cfg.SCHEMA_NAME)
-  cursor.execute(sql) # 删除当前数据
-  conn.commit()
-  cursor.close()
-  conn.close()
+  mod_data_pg(sql)
 
   ip_list = get_proxy()
   get_data(ip_list)
